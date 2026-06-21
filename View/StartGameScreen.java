@@ -24,20 +24,23 @@ public class StartGameScreen extends AbstractScreen {
 
 
 
+        Table menuBlockTable = new Table();
+        menuBlockTable.right();
 
 
 
 
         Button enterNewGameButton = EnterGameButtonGenerator.generateButton(skin, "gameButton/select_game_HUD_0002_health_frame.png", "New Game");
-        uiTable.add(enterNewGameButton).center().padTop(200).row();
+        menuBlockTable.add(enterNewGameButton).right().padTop(150).row();
 
         Button enterSavedGameButton = EnterGameButtonGenerator.generateButton(skin, "gameButton/select_game_HUD_godseeker.png", "New Game");
-        uiTable.add(enterSavedGameButton).center().padTop(10).row();
+        menuBlockTable.add(enterSavedGameButton).right().padTop(10).row();
 
         Button enterSavedGameButton1 = EnterGameButtonGenerator.generateButton(skin, "gameButton/select_game_HUD_Steel_Soul.png", "New Game");
-        uiTable.add(enterSavedGameButton1).center().padTop(10).row();
+        menuBlockTable.add(enterSavedGameButton1).right().padTop(10).row();
 
 
+        uiTable.add(menuBlockTable).padRight(300).center().row();
 
 
 
