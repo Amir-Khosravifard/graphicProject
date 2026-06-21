@@ -2,9 +2,14 @@ package com.test.liftoff.View;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public class AbstractScreen implements Screen {
@@ -51,5 +56,16 @@ public class AbstractScreen implements Screen {
     @Override
     public void dispose() {
 
+    }
+
+    public TextButton createBackButton(Screen backScreen) {
+        TextButton backButton = new TextButton("Back", skin);
+        backButton.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                UIManager.changeScreen(backScreen);
+            }
+        });
+        return backButton;
     }
 }
