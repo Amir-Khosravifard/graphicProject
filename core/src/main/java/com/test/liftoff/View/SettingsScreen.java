@@ -25,7 +25,7 @@ public class SettingsScreen extends AbstractScreen{
 
         stack.add(uiTable);
 
-        stage.addActor(stack);
+        rootTable.add(stack).grow().minSize(0);
         Gdx.input.setInputProcessor(stage);
     }
 }

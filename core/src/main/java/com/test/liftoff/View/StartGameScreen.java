@@ -2,7 +2,9 @@ package com.test.liftoff.View;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 public class StartGameScreen extends AbstractScreen {
     @Override
@@ -28,6 +30,12 @@ public class StartGameScreen extends AbstractScreen {
 
 
         Button enterNewGameButton = EnterGameButtonGenerator.generateButton(skin, "gameButton/select_game_HUD_0002_health_frame.png", "New Game");
+        enterNewGameButton.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                UIManager.changeScreen(new GameScreen());
+            }
+        });
         menuBlockTable.add(enterNewGameButton).right().padTop(150).row();
 
         Button enterSavedGameButton = EnterGameButtonGenerator.generateButton(skin, "gameButton/select_game_HUD_godseeker.png", "New Game");
@@ -50,7 +58,7 @@ public class StartGameScreen extends AbstractScreen {
 
         stack.add(uiTable);
 
-        stage.addActor(stack);
+        rootTable.add(stack).grow().minSize(0);
         Gdx.input.setInputProcessor(stage);
 
     }

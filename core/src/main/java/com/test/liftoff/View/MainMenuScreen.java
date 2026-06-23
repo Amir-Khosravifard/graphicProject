@@ -15,7 +15,6 @@ public class MainMenuScreen extends AbstractScreen {
         super.show();
 
         Stack stack = new Stack();
-        stack.setFillParent(true);
 
 
         Texture backGroundTexture = new Texture(Gdx.files.internal("BackGround/Voidheart_menu_BG.png"));
@@ -78,7 +77,7 @@ public class MainMenuScreen extends AbstractScreen {
 
         stack.add(uiTable);
 
-        stage.addActor(stack);
+        rootTable.add(stack).grow().minSize(0);
 
         Gdx.input.setInputProcessor(stage);
 

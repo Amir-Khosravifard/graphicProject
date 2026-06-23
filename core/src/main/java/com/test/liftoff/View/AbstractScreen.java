@@ -5,22 +5,37 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Stack;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public class AbstractScreen implements Screen {
     protected Stage stage;
     protected Skin skin;
+
+    protected Table rootTable;
+    private Stack mainStack;
+    private Stack modalStack;
+    private Stack toastStack;
+
     @Override
     public void show() {
 //        ScreenViewport screenViewport = new ScreenViewport();
 //        screenViewport.setUnitsPerPixel(0.75f);
         stage = new Stage(new ScreenViewport());
-        skin = new Skin(Gdx.files.internal("uiSkin/plain-james-ui.json"));
+        skin = AssetManager.getSkin();
+
+        mainStack = new Stack();
+        mainStack.setFillParent(true);
+        modalStack = new Stack();
+        toastStack = new Stack();
+        rootTable = new Table();
+
+        mainStack.add(rootTable);
+        mainStack.add(modalStack);
+        mainStack.add(toastStack);
+
+        stage.addActor(mainStack);
 
     }
 
@@ -28,9 +43,15 @@ public class AbstractScreen implements Screen {
     public void render(float delta) {
         Gdx.gl.glClearColor(0.05f, 0.05f, 0.1f, 1f);
         Gdx.gl.glClear(com.badlogic.gdx.graphics.GL20.GL_COLOR_BUFFER_BIT);
-        stage.act(delta);
-        stage.draw();
 
+        stage.act(delta);
+
+        renderWorld(delta);
+
+        stage.draw();
+    }
+
+    public void renderWorld(float delta) {
     }
 
     @Override
@@ -57,6 +78,10 @@ public class AbstractScreen implements Screen {
     public void dispose() {
 
     }
+    public void addToModalStack(Table table){
+        modalStack.add(table);
+    }
+
 
     public TextButton createBackButton(Screen backScreen) {
         TextButton backButton = new TextButton("Back", skin);

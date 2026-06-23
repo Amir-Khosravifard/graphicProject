@@ -11,4 +11,9 @@ public class UIManager {
     public static void changeScreen(Screen screen){
         main.setScreen(screen);
     }
+    public static AbstractScreen getCurrentScreen(){
+        if(main.getScreen() instanceof AbstractScreen)
+            return (AbstractScreen) main.getScreen();
+        return null;
+    }
 }
