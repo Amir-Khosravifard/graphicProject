@@ -8,10 +8,18 @@ public class GameProcessor implements InputProcessor {
     @Override
     public boolean keyDown(int keyCode) {
         if(keyCode == Input.Keys.ESCAPE){
-            Modal modal = new Modal();
-            TextButton textButton = new TextButton("resume", AssetManager.getSkin());
-            modal.add(textButton);
-            modal.show();
+            PauseModal pauseModal = new PauseModal(){
+                @Override
+                public void onExit() {
+                    UIManager.changeScreen(new StartGameScreen());
+                }
+
+                @Override
+                public void onResume() {
+                    hide();
+                }
+            };
+            pauseModal.show();
 
         }
         return false;
