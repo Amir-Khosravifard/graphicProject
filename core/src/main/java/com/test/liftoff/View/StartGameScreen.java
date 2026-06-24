@@ -5,6 +5,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.test.liftoff.Controller.GameController;
+import com.test.liftoff.Model.Player;
 
 public class StartGameScreen extends AbstractScreen {
     @Override
@@ -33,7 +35,7 @@ public class StartGameScreen extends AbstractScreen {
         enterNewGameButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                UIManager.changeScreen(new GameScreen());
+                UIManager.changeScreen(new GameScreen(new GameController(new Player())));
             }
         });
         menuBlockTable.add(enterNewGameButton).right().padTop(150).row();

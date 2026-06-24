@@ -3,8 +3,16 @@ package com.test.liftoff.View;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.test.liftoff.Controller.GameController;
+import com.test.liftoff.Enums.AnimationType;
 
 public class GameProcessor implements InputProcessor {
+    private GameController gameController;
+
+    public GameProcessor(GameController gameController) {
+        this.gameController = gameController;
+    }
+
     @Override
     public boolean keyDown(int keyCode) {
         if(keyCode == Input.Keys.ESCAPE){
@@ -20,13 +28,28 @@ public class GameProcessor implements InputProcessor {
                 }
             };
             pauseModal.show();
-
+        }
+        else if(keyCode == Input.Keys.D){
+            gameController.setMovingRight(true);
+        }
+        else if(keyCode == Input.Keys.A){
+            gameController.setMovingLeft(true);
+        }
+        else if(keyCode == Input.Keys.W){
+            gameController.jumpPlayer();
         }
         return false;
     }
 
     @Override
-    public boolean keyUp(int i) {
+    public boolean keyUp(int keyCode) {
+
+        if(keyCode == Input.Keys.D){
+            gameController.setMovingRight(false);
+        }
+        else if(keyCode == Input.Keys.A){
+            gameController.setMovingLeft(false);
+        }
         return false;
     }
 
