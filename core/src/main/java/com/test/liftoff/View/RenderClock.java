@@ -1,17 +1,18 @@
 package com.test.liftoff.View;
 
+import com.test.liftoff.Enums.AnimationType;
 import com.test.liftoff.Enums.EntityState;
 
 public class RenderClock {
     private float animTime = 0f;
-    private EntityState lastState = EntityState.IDLE;
+    private AnimationType lastAnimation = null; // 💡 Track the visual asset sheet instead!
 
-    public void update(EntityState currentState, float delta) {
-        if (currentState != lastState) {
-            animTime = 0f;         // Reset frame to 0 when state changes!
-            lastState = currentState;
+    public void update(AnimationType currentAnimation, float delta) {
+        if (currentAnimation != lastAnimation) {
+            animTime = 0f;         // Only reset to frame 0 if the actual sheet changes
+            lastAnimation = currentAnimation;
         } else {
-            animTime += delta;     // Otherwise tick the frame forward smoothly
+            animTime += delta;     // Otherwise tick forward smoothly
         }
     }
 

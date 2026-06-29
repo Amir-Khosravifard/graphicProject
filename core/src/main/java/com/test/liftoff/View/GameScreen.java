@@ -16,6 +16,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.test.liftoff.Controller.GameController;
 import com.test.liftoff.Enums.AnimationType;
+import com.test.liftoff.Enums.EntityState;
 import com.test.liftoff.Model.Entity.Entity;
 import com.test.liftoff.Model.Entity.Player;
 import com.test.liftoff.Tiled.TiledMapHelper;
@@ -90,27 +91,24 @@ public class GameScreen extends AbstractScreen{
         viewport.update(width, height);
     }
 
-    private TextureRegion getFrameForEntity(Entity entity, float visualTime) {
-        AnimationType animationType;
-
-        // Map the entity's logical state to your specific Knight assets
-        switch (entity.getCurrentState()) {
+    private AnimationType getAnimationTypeForState(EntityState state) {
+        // 💡 FIXED: Clean, direct stateless mapping
+        switch (state) {
             case RUNNING:
-                animationType = AnimationType.KnightRun;
-                break;
+                return AnimationType.KnightRun;
             case JUMPING:
-                animationType = AnimationType.KnightRegularJump;
-                break;
             case FALLING:
-                animationType = AnimationType.KnightRegularLanding;
-                break;
+                return AnimationType.KnightRegularJump;
+            case LANDING:
+                return AnimationType.KnightRegularLanding; // Returns Landing.png directly
             case IDLE:
             default:
-                animationType = AnimationType.KnightIdle;
-                break;
+                return AnimationType.KnightIdle;
         }
-
+    }
+    private TextureRegion getFrameFromAsset(AnimationType animationType, float visualTime, Entity entity) {
         TextureRegion frame = AssetManager.getAnimation(animationType).getKeyFrame(visualTime);
+
         // Handle image mirroring/flipping based on model orientation
         if (entity.isLookingRight() && !frame.isFlipX()) frame.flip(true, false);
         else if (!entity.isLookingRight() && frame.isFlipX()) frame.flip(true, false);
@@ -138,10 +136,13 @@ public class GameScreen extends AbstractScreen{
             }
             RenderClock clock = visualClocks.get(entity);
 
-            clock.update(entity.getCurrentState(), delta);
+            AnimationType targetAnim = getAnimationTypeForState(entity.getCurrentState());
+
+            clock.update(targetAnim, delta);
+
+            TextureRegion frame = getFrameFromAsset(targetAnim, clock.getAnimTime(), entity);
 
 
-            TextureRegion frame = getFrameForEntity(entity, clock.getAnimTime()); // View reads state and finds asset
             if (frame != null) {
                 float spriteOffsetX = ((frame.getRegionWidth() - entity.getWidth()) / 2f) - 5f;
                 float spriteOffsetY = 0f;

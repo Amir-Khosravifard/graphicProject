@@ -10,12 +10,15 @@ import com.test.liftoff.Model.Entity.Player;
 import com.test.liftoff.View.AssetManager;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class GameController {
     private static int gravity = 1000;
     private Player player;
     private AnimationType playerCurrentAnimation = AnimationType.KnightIdle;
     private float playerStateTime = 0;
+
+    private HashMap<Entity, Float> landingTimers = new HashMap<>();
 
     private ArrayList<Entity> entities = new ArrayList<>();
     private ArrayList<Rectangle> platforms = new ArrayList<>();
@@ -127,17 +130,39 @@ public class GameController {
 
 
     private void updateEntityAnimation(Entity entity, float delta) {
-        EntityState nextState;
+        EntityState nextState = entity.getCurrentState();
 
-        if (entity.getVelocity().x != 0 && entity.isOnGround()) {
-            nextState = EntityState.RUNNING;
-        } else if (!entity.isOnGround()) {
+        if (!entity.isOnGround()) {
             nextState = entity.getVelocity().y > 0 ? EntityState.JUMPING : EntityState.FALLING;
+            landingTimers.remove(entity); // Clean up tracker if they go airborne
         } else {
-            nextState = EntityState.IDLE;
+            if (entity.getVelocity().x != 0) {
+                nextState = EntityState.RUNNING;
+                landingTimers.remove(entity); // Clean up tracker if they start running
+            } else {
+                // If they were just falling or jumping on the last frame and are now grounded
+                if (entity.getCurrentState() == EntityState.FALLING || entity.getCurrentState() == EntityState.JUMPING) {
+                    nextState = EntityState.LANDING; // Trigger the impact state!
+                    landingTimers.put(entity, 0f);   // Initialize landing timer at 0
+                }
+                // 💡 NEW: If they are actively landing, check how much time has elapsed
+                else if (entity.getCurrentState() == EntityState.LANDING) {
+                    float currentLandingTime = landingTimers.getOrDefault(entity, 0f) + delta;
+
+                    // 4 frames playing at 1/30f = exactly 0.1333 seconds duration
+                    if (currentLandingTime >= 0.1333f) {
+                        nextState = EntityState.IDLE; // Timer finished! Safely switch to IDLE
+                        landingTimers.remove(entity);  // Remove tracking memory
+                    } else {
+                        landingTimers.put(entity, currentLandingTime); // Update elapsed time
+                        nextState = EntityState.LANDING;               // Maintain landing state
+                    }
+                } else {
+                    nextState = EntityState.IDLE;
+                }
+            }
         }
 
-        // Just change the state data. No timing logic here anymore!
         entity.setCurrentState(nextState);
     }
 

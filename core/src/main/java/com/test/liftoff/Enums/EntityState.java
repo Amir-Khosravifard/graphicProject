@@ -4,5 +4,6 @@ public enum EntityState {
      IDLE,
     RUNNING,
     JUMPING,
-    FALLING;
+    FALLING,
+    LANDING;
 }
