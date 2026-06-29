@@ -6,7 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.test.liftoff.Controller.GameController;
-import com.test.liftoff.Model.Player;
+import com.test.liftoff.Model.Entity.Player;
 
 public class StartGameScreen extends AbstractScreen {
     @Override

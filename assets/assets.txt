@@ -1132,11 +1132,20 @@ animations/animation/Zote/Talk_004.png
 animations/animation/Zote/Turn.png
 animations/animation/Zote/Turn_000.png
 animations/animation/Zote/Turn_001.png
+gameAssets/crystal peak/crystal1.png
+gameAssets/crystal peak/crystalPath.png
+gameAssets/crystal peak/flame1.png
 gameButton/select_game_HUD_0002_health_frame.png
 gameButton/select_game_HUD_Steel_Soul.png
 gameButton/select_game_HUD_godseeker.png
 gameButton/selector.png
 libgdx.png
+tiledMaps/crystal1.tsx
+tiledMaps/crystalPath.tsx
+tiledMaps/firstMap.tiled-project
+tiledMaps/firstMap.tiled-session
+tiledMaps/firstMap.tmx
+tiledMaps/flame1.tsx
 uiSkin/font-export.fnt
 uiSkin/font-title-export.fnt
 uiSkin/plain-james-ui.atlas

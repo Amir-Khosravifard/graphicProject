@@ -5,7 +5,8 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 public enum AnimationType {
     KnightIdle("animations/animation/Idle.png", 9, Animation.PlayMode.LOOP),
     KnightRun("animations/animation/Run.png", 13, Animation.PlayMode.LOOP),
-    KnightRegularJump("animations/animation/Airborne.png", 12, Animation.PlayMode.NORMAL);
+    KnightRegularJump("animations/animation/Airborne.png", 12, Animation.PlayMode.LOOP),
+    KnightRegularLanding("animations/animation/Landing.png", 4, Animation.PlayMode.NORMAL);
 
 
     private final String path;
