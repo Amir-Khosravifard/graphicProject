@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public class AbstractScreen implements Screen {
@@ -20,8 +21,7 @@ public class AbstractScreen implements Screen {
 
     @Override
     public void show() {
-//        ScreenViewport screenViewport = new ScreenViewport();
-//        screenViewport.setUnitsPerPixel(0.75f);
+
         stage = new Stage(new ScreenViewport());
         skin = AssetManager.getSkin();
 
@@ -56,6 +56,22 @@ public class AbstractScreen implements Screen {
 
     @Override
     public void resize(int width, int height) {
+        float baseWidth = 1280f;
+        float baseHeight = 720f;
+
+        float scaleX = width / baseWidth;
+        float scaleY = height / baseHeight;
+        float scale = Math.min(scaleX, scaleY);
+
+        float maxScale = 1.25f;
+        float minScale = 0.75f;
+        if (scale > maxScale) scale = maxScale;
+        if (scale < minScale) scale = minScale;
+
+        if (stage.getViewport() instanceof ScreenViewport) {
+            ((ScreenViewport) stage.getViewport()).setUnitsPerPixel(1f / scale);
+        }
+
         stage.getViewport().update(width, height, true);
     }
 
@@ -76,7 +92,7 @@ public class AbstractScreen implements Screen {
 
     @Override
     public void dispose() {
-
+        if (stage != null) stage.dispose();
     }
     public void addToModalStack(Table table){
         modalStack.add(table);

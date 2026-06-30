@@ -12,11 +12,30 @@ public abstract class Entity {
     protected boolean isOnGround = false;
     protected boolean isLookingRight = true;
 
+    protected int health;
+    protected boolean isDead = false;
+
     protected EntityState currentState = EntityState.IDLE;
 
-    public Entity(float width, float height) {
+    public int getHealth() { return health; }
+    public void setHealth(int health) { this.health = health; }
+
+    public boolean isDead() { return isDead; }
+    public void setDead(boolean dead) { this.isDead = dead; }
+
+    public void takeDamage(int amount) {
+        if (isDead) return;
+        this.health -= amount;
+        if (this.health <= 0) {
+            this.health = 0;
+            this.isDead = true;
+        }
+    }
+
+    public Entity(float width, float height, int maxHealth) {
         this.width = width;
         this.height = height;
+        this.health = maxHealth;
     }
 
     public EntityState getCurrentState() { return currentState; }

@@ -347,6 +347,7 @@ animations/animation/Effects/UpSlashEffect_004.png
 animations/animation/Effects/UpSlashEffect_005.png
 animations/animation/Effects/White Wave Lone_aaaaa_info.txt
 animations/animation/Effects/White Wave Lone_full_0.png
+animations/animation/Fall.png
 animations/animation/Fall_000.png
 animations/animation/Fall_001.png
 animations/animation/Fall_002.png
@@ -1132,6 +1133,24 @@ animations/animation/Zote/Talk_004.png
 animations/animation/Zote/Turn.png
 animations/animation/Zote/Turn_000.png
 animations/animation/Zote/Turn_001.png
+forgottenCrossroads/BG_egg_07_0001_Layer-2.png
+forgottenCrossroads/BG_egg_07_0003_Layer-4.png
+forgottenCrossroads/FK_break__0001_wall_half_break.png
+forgottenCrossroads/atlas0 #00000302.png
+forgottenCrossroads/cd_BG_well_shaft.png
+forgottenCrossroads/cd_archbase_01.png
+forgottenCrossroads/cd_archbase_01_long.png
+forgottenCrossroads/cd_big_roof_0000_07.png
+forgottenCrossroads/cd_big_roof_0001_06.png
+forgottenCrossroads/cd_big_roof_0006_01.png
+forgottenCrossroads/cd_floor_02.png
+forgottenCrossroads/cd_floor_highway_05.png
+forgottenCrossroads/cd_room_BG_01.png
+forgottenCrossroads/lamp_01.png
+forgottenCrossroads/salubra_ext_01.png
+forgottenCrossroads/wd_BG_skull_02.png
+forgottenCrossroads/wd_roof_05.png
+forgottenCrossroads/well_extension_0001_1.png
 gameAssets/crystal peak/crystal1.png
 gameAssets/crystal peak/crystalPath.png
 gameAssets/crystal peak/flame1.png
@@ -1140,12 +1159,21 @@ gameButton/select_game_HUD_Steel_Soul.png
 gameButton/select_game_HUD_godseeker.png
 gameButton/selector.png
 libgdx.png
+tiledMaps/blade.tsx
 tiledMaps/crystal1.tsx
 tiledMaps/crystalPath.tsx
 tiledMaps/firstMap.tiled-project
 tiledMaps/firstMap.tiled-session
 tiledMaps/firstMap.tmx
 tiledMaps/flame1.tsx
+tiledMaps/forgottenCrossroad.tiled-project
+tiledMaps/forgottenCrossroad.tiled-session
+tiledMaps/forgottenCrossroad.tmx
+tiledMaps/greenPath.tmx
+tiledMaps/platform1.tsx
+tiledMaps/platform2.tsx
+tiledMaps/platform3.tsx
+tiledMaps/someObjects.tsx
 uiSkin/font-export.fnt
 uiSkin/font-title-export.fnt
 uiSkin/plain-james-ui.atlas

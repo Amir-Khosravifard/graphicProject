@@ -5,5 +5,8 @@ public enum EntityState {
     RUNNING,
     JUMPING,
     FALLING,
-    LANDING;
+    LANDING,
+    DASHING,
+    ATTACKING,
+    FOCUSING;
 }

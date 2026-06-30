@@ -92,15 +92,26 @@ public class GameScreen extends AbstractScreen{
     }
 
     private AnimationType getAnimationTypeForState(EntityState state) {
-        // 💡 FIXED: Clean, direct stateless mapping
         switch (state) {
             case RUNNING:
                 return AnimationType.KnightRun;
             case JUMPING:
-            case FALLING:
                 return AnimationType.KnightRegularJump;
+            case FALLING:
+                return AnimationType.KnightFall;
             case LANDING:
-                return AnimationType.KnightRegularLanding; // Returns Landing.png directly
+                return AnimationType.KnightRegularLanding;
+            case DASHING:
+                // Safe Fallback: Uses run animation frames until you add a Dash sheet
+                return AnimationType.KnightDash;
+
+            case ATTACKING:
+                // Safe Fallback: Uses run animation frames until you add an Attack sheet
+                return AnimationType.KnightSlash;
+
+            case FOCUSING:
+                // Safe Fallback: Character stands completely still using Idle sheet frames
+                return AnimationType.KnightFocus;
             case IDLE:
             default:
                 return AnimationType.KnightIdle;
@@ -109,7 +120,6 @@ public class GameScreen extends AbstractScreen{
     private TextureRegion getFrameFromAsset(AnimationType animationType, float visualTime, Entity entity) {
         TextureRegion frame = AssetManager.getAnimation(animationType).getKeyFrame(visualTime);
 
-        // Handle image mirroring/flipping based on model orientation
         if (entity.isLookingRight() && !frame.isFlipX()) frame.flip(true, false);
         else if (!entity.isLookingRight() && frame.isFlipX()) frame.flip(true, false);
 

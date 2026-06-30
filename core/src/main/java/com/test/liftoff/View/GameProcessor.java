@@ -29,14 +29,23 @@ public class GameProcessor implements InputProcessor {
             };
             pauseModal.show();
         }
-        else if(keyCode == Input.Keys.D){
+        else if(keyCode == Input.Keys.RIGHT){
             gameController.setMovingRight(true);
         }
-        else if(keyCode == Input.Keys.A){
+        else if(keyCode == Input.Keys.LEFT){
             gameController.setMovingLeft(true);
         }
-        else if(keyCode == Input.Keys.W){
+        else if(keyCode == Input.Keys.UP){
             gameController.jumpPlayer();
+        }
+        else if(keyCode == Input.Keys.C) {
+            gameController.handlePlayerDash();
+        }
+        else if(keyCode == Input.Keys.X){
+            gameController.handlePlayerAttack();
+        }
+        else if(keyCode == Input.Keys.A){
+            gameController.setFocusActive(true);
         }
         return false;
     }
@@ -44,12 +53,13 @@ public class GameProcessor implements InputProcessor {
     @Override
     public boolean keyUp(int keyCode) {
 
-        if(keyCode == Input.Keys.D){
+        if(keyCode == Input.Keys.RIGHT){
             gameController.setMovingRight(false);
         }
-        else if(keyCode == Input.Keys.A){
+        else if(keyCode == Input.Keys.LEFT){
             gameController.setMovingLeft(false);
         }
+        else if(keyCode == Input.Keys.A){ gameController.setFocusActive(false); } // Releasing S stops focusing
         return false;
     }
 
