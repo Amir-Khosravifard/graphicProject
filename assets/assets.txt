@@ -1,6 +1,13 @@
 BackGround/Voidheart_menu_BG.png
 BackGround/startGameBackGround.png
 BackGround/startGameButton.png
+BackGround/undefined - Imgur.png
+BackGround/undefined - Imgur1.png
+BackGround/undefined - Imgur2.png
+BackGround/undefined - Imgur3.png
+BackGround/undefined - Imgur4.png
+BackGround/undefined - Imgur5.png
+BackGround/undefined - Imgur6.png
 BackGround/vheart_title.png
 SpriteAtlasTexture-Premenu (Group 1)-1024x1024-fmt10.png
 animations.zip
@@ -1159,6 +1166,10 @@ gameButton/select_game_HUD_Steel_Soul.png
 gameButton/select_game_HUD_godseeker.png
 gameButton/selector.png
 libgdx.png
+sounds/S19 Crossroads Main.wav
+sounds/S5 Green Path Main.wav
+sounds/S61-216 Hollow Knight.wav
+sounds/Title.wav
 tiledMaps/blade.tsx
 tiledMaps/crystal1.tsx
 tiledMaps/crystalPath.tsx
@@ -1174,8 +1185,15 @@ tiledMaps/platform1.tsx
 tiledMaps/platform2.tsx
 tiledMaps/platform3.tsx
 tiledMaps/someObjects.tsx
-uiSkin/font-export.fnt
-uiSkin/font-title-export.fnt
-uiSkin/plain-james-ui.atlas
-uiSkin/plain-james-ui.json
-uiSkin/plain-james-ui.png
+uiSkin/james/font-export.fnt
+uiSkin/james/font-title-export.fnt
+uiSkin/james/plain-james-ui.atlas
+uiSkin/james/plain-james-ui.json
+uiSkin/james/plain-james-ui.png
+uiSkin/neon/czyzby gdx-skins master neon-skin.zip
+uiSkin/neon/font-export.fnt
+uiSkin/neon/font-over-export.fnt
+uiSkin/neon/font-pressed-export.fnt
+uiSkin/neon/neon-ui.atlas
+uiSkin/neon/neon-ui.json
+uiSkin/neon/neon-ui.png

@@ -3,7 +3,6 @@ package com.test.liftoff.View;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -14,9 +13,11 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.test.liftoff.Audio.SoundManager;
 import com.test.liftoff.Controller.GameController;
 import com.test.liftoff.Enums.AnimationType;
 import com.test.liftoff.Enums.EntityState;
+import com.test.liftoff.Enums.LevelType;
 import com.test.liftoff.Model.Entity.Entity;
 import com.test.liftoff.Model.Entity.Player;
 import com.test.liftoff.Tiled.TiledMapHelper;
@@ -32,6 +33,7 @@ public class GameScreen extends AbstractScreen{
     private GameProcessor gameProcessor;
     private GameController gameController;
 
+    private LevelType levelType;
     private TiledMap tiledMap;
     private OrthogonalTiledMapRenderer mapRenderer;
 
@@ -41,8 +43,9 @@ public class GameScreen extends AbstractScreen{
     private int[] backgroundLayers;
     private int[] foregroundLayers;
 
-    public GameScreen(GameController gameController) {
+    public GameScreen(GameController gameController, LevelType levelType) {
         this.gameController = gameController;
+        this.levelType = levelType;
     }
 
 
@@ -50,6 +53,7 @@ public class GameScreen extends AbstractScreen{
     public void show() {
         super.show();
 
+        SoundManager.playBackGroundMusic(levelType.getBackGroundMusicType());
         batch = new SpriteBatch();
         camera = new OrthographicCamera();
         viewport = new ScreenViewport(camera);
@@ -70,8 +74,7 @@ public class GameScreen extends AbstractScreen{
         backgroundLayers = new int[]{backLayerIdx, mainLayerIdx};
         foregroundLayers = new int[]{frontLayerIdx};
 
-        Vector2 spawnPoint = mapHelper.getObjectPosition("Object Layer 1", "spawnPlayer");
-        gameController.getPlayerPosition().set(spawnPoint);
+        Vector2 spawnPoint = mapHelper.getObjectPosition(levelType.getObjectLayerName(), levelType.getSpawnPointName());        gameController.getPlayerPosition().set(spawnPoint);
 
         ArrayList<Rectangle> platforms = mapHelper.getCollisionRectangles("Object Layer 1");
         gameController.setPlatforms(platforms);

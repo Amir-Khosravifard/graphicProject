@@ -5,17 +5,23 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.test.liftoff.Controller.GameController;
-import com.test.liftoff.Model.Entity.Player;
+import com.test.liftoff.Audio.SoundManager;
+import com.test.liftoff.Enums.AudioType;
 
 public class StartGameScreen extends AbstractScreen {
     @Override
     public void show() {
         super.show();
+
+        SoundManager.playBackGroundMusic(AudioType.TITLE_THEME);
+
+
         Stack stack = new Stack();
         stack.setFillParent(true);
-        Texture backGroundTexture = new Texture(Gdx.files.internal("BackGround/startGameBackGround.png"));
+        Texture backGroundTexture = new Texture(Gdx.files.internal("BackGround/undefined - Imgur2.png"));
         Image backGroundImage = new Image(backGroundTexture);
+
+        backGroundImage.setScaling(com.badlogic.gdx.utils.Scaling.fill);
         stack.add(backGroundImage);
 
 

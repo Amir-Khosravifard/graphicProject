@@ -1,24 +1,27 @@
 package com.test.liftoff.View;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.test.liftoff.Enums.AudioType;
+import com.test.liftoff.Audio.SoundManager;
 
 public class MainMenuScreen extends AbstractScreen {
     @Override
     public void show() {
         super.show();
+        SoundManager.playBackGroundMusic(AudioType.TITLE_THEME);
 
         Stack stack = new Stack();
 
 
-        Texture backGroundTexture = new Texture(Gdx.files.internal("BackGround/Voidheart_menu_BG.png"));
+        Texture backGroundTexture = new Texture(Gdx.files.internal("BackGround/undefined - Imgur.png"));
         Image backGroundImage = new Image(backGroundTexture);
+
+        backGroundImage.setScaling(com.badlogic.gdx.utils.Scaling.fill);
+
         stack.add(backGroundImage);
 
 //        stack.add(logoImage);

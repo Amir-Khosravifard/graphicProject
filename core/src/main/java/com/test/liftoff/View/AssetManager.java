@@ -28,7 +28,7 @@ public class AssetManager {
     }
 
     public static void initAsset(){
-        skin = new Skin(Gdx.files.internal("uiSkin/plain-james-ui.json"));
+        skin = new Skin(Gdx.files.internal("uiSkin/james/plain-james-ui.json"));
         for (AnimationType type: AnimationType.values())
             loadAnimation(type, type.getPlayMode());
     }
