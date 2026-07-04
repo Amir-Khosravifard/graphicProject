@@ -35,6 +35,10 @@ public class GameProcessor implements InputProcessor {
         else if(keyCode == Input.Keys.LEFT){
             gameController.setMovingLeft(true);
         }
+
+        else if (keyCode == Input.Keys.DOWN) {
+            gameController.setLookingDown(true);
+        }
         else if(keyCode == Input.Keys.UP){
             gameController.jumpPlayer();
         }
@@ -58,6 +62,9 @@ public class GameProcessor implements InputProcessor {
         }
         else if(keyCode == Input.Keys.LEFT){
             gameController.setMovingLeft(false);
+        }
+        else if (keyCode == Input.Keys.DOWN) {
+            gameController.setLookingDown(false);
         }
         else if(keyCode == Input.Keys.A){ gameController.setFocusActive(false); } // Releasing S stops focusing
         return false;

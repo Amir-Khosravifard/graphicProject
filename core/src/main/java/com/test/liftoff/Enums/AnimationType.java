@@ -9,8 +9,13 @@ public enum AnimationType {
     KnightRegularLanding("animations/animation/Landing.png", 4, Animation.PlayMode.NORMAL),
     KnightFall("animations/animation/Fall.png", 6, Animation.PlayMode.LOOP_PINGPONG),
     KnightDash("animations/animation/Dash.png", 12, Animation.PlayMode.NORMAL),
-    KnightSlash("animations/animation/Slash.png", 5, Animation.PlayMode.LOOP),
-    KnightFocus("animations/animation/Focus.png", 4, Animation.PlayMode.LOOP);
+    KnightNailSlash("animations/animation/SlashAlt.png", 5, Animation.PlayMode.LOOP),
+    KnightFocusStart("animations/animation/Focus Start.png", 3, Animation.PlayMode.NORMAL),
+    KnightFocusLoop("animations/animation/Focus.png", 4, Animation.PlayMode.LOOP),
+    KnightFocusGet("animations/animation/Focus Get.png", 6, Animation.PlayMode.NORMAL),
+    KnightFocusEnd("animations/animation/Focus End.png", 3, Animation.PlayMode.NORMAL),
+    KnightDoubleJump("animations/animation/Double Jump.png", 8, Animation.PlayMode.NORMAL),
+    KnightPogo("animations/animation/DownSlash.png", 5, Animation.PlayMode.NORMAL);
 
 
     private final String path;

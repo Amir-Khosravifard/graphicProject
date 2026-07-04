@@ -1,13 +1,11 @@
 package com.test.liftoff.Controller;
 
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.test.liftoff.Enums.AnimationType;
 import com.test.liftoff.Enums.EntityState;
 import com.test.liftoff.Model.Entity.Entity;
 import com.test.liftoff.Model.Entity.Player;
-import com.test.liftoff.View.AssetManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,6 +29,9 @@ public class GameController {
 
     private float focusTimer = 0f;
     private final float focusRequiredTime = 1.5f;
+
+    private boolean hasDoubleJumped = false;
+    private boolean isPogoAttacking = false;
 
     public void setPlatforms(ArrayList<Rectangle> platforms) {
         this.platforms = platforms;
@@ -60,8 +61,15 @@ public class GameController {
     public void setMovingLeft(boolean movingLeft){
         player.setMovingLeft(movingLeft);
     }
-    public void jumpPlayer(){
-        player.jump();
+    public void jumpPlayer() {
+        if (player.isDead() || player.isFocusing()) return;
+
+        if (player.isOnGround()) {
+            player.getVelocity().y = 500f;
+        } else if (!hasDoubleJumped) {
+            player.getVelocity().y = 520f;
+            hasDoubleJumped = true;
+        }
     }
 
     public void handlePlayerDash() {
@@ -81,14 +89,25 @@ public class GameController {
         }
     }
 
+    public void setLookingDown(boolean lookingDown){
+        player.setLookingDown(lookingDown);
+    }
+
+
+
     public void handlePlayerAttack() {
         if (player.isDashing() || player.isFocusing() || player.isDead()) return;
 
-        if (!player.isAttacking()) {
-            player.setAttacking(true);
-            attackTimer = attackDuration;
+        if (!player.isAttacking() && !isPogoAttacking) {
 
-            player.addSoul(11);
+            if (!player.isOnGround() && player.isLookingDown()) {
+                isPogoAttacking = true;
+                player.setAttacking(true);
+            } else {
+                player.setAttacking(true);
+                player.addSoul(11);
+            }
+            attackTimer = attackDuration;
         }
     }
 
@@ -98,9 +117,18 @@ public class GameController {
             return;
         }
 
-        player.setFocusing(active);
-        if (!active) {
-            focusTimer = 0f;
+        if (player.getCurrentState() == EntityState.FOCUS_GET || player.getCurrentState() == EntityState.FOCUS_END) {
+            return;
+        }
+
+        if (active) {
+            player.setFocusing(true);
+        } else {
+            if (player.isFocusing() && (player.getCurrentState() == EntityState.FOCUS_START || player.getCurrentState() == EntityState.FOCUS_LOOPING)) {
+                player.setCurrentState(EntityState.FOCUS_END);
+                focusTimer = 0f;
+            }
+            player.setFocusing(false);
         }
     }
 
@@ -166,6 +194,23 @@ public class GameController {
                 }
             }
         }
+
+        if (isPogoAttacking && player.getVelocity().y <= 0) {
+            Rectangle pogoHitbox = new Rectangle(player.getPosition().x, player.getPosition().y - 15f, player.getWidth(), 15f);
+            if (platforms != null) {
+                for (Rectangle platform : platforms) {
+                    if (pogoHitbox.overlaps(platform)) {
+                        player.getVelocity().y = 550f;
+                        isPogoAttacking = false;
+                        player.setAttacking(false);
+
+                        hasDashedInAir = false;
+                        hasDoubleJumped = false;
+                        break;
+                    }
+                }
+            }
+        }
     }
 
 
@@ -175,16 +220,24 @@ public class GameController {
         if (entity == player && player.isDashing()) {
             nextState = EntityState.DASHING;
             landingTimers.remove(entity);
+
+        } else if (entity == player && isPogoAttacking) {
+            nextState = EntityState.POGO_ATTACKING;
+            landingTimers.remove(entity);
         } else if (entity == player && player.isAttacking()) {
             nextState = EntityState.ATTACKING;
             landingTimers.remove(entity);
         } else if (entity == player && player.isFocusing()) {
-            nextState = EntityState.FOCUSING;
+            nextState = EntityState.FOCUS_LOOPING;
             landingTimers.remove(entity);
         } else if (!entity.isOnGround()) {
-            nextState = entity.getVelocity().y > 0 ? EntityState.JUMPING : EntityState.FALLING;
-            landingTimers.remove(entity);
-        } else {
+            if (entity == player && hasDoubleJumped && entity.getVelocity().y > 0) {
+                nextState = EntityState.DOUBLE_JUMPING;
+            } else {
+                nextState = entity.getVelocity().y > 0 ? EntityState.JUMPING : EntityState.FALLING;
+            }
+            landingTimers.remove(entity);}
+        else {
             if (entity.getVelocity().x != 0) {
                 nextState = EntityState.RUNNING;
                 landingTimers.remove(entity);
@@ -211,12 +264,25 @@ public class GameController {
 
 
 
-    public void update(float delta){
-
+    public void update(float delta) {
         if (player.isDead()) return;
-
         if (dashCooldownTimer > 0) dashCooldownTimer -= delta;
 
+        if (isPogoAttacking && player.getVelocity().y <= 0) {
+            Rectangle pogoHitbox = new Rectangle(player.getPosition().x, player.getPosition().y - 15f, player.getWidth(), 15f);
+            if (platforms != null) {
+                for (Rectangle platform : platforms) {
+                    if (pogoHitbox.overlaps(platform)) {
+                        player.getVelocity().y = 550f;
+                        isPogoAttacking = false;
+
+                        hasDashedInAir = false;
+                        hasDoubleJumped = false;
+                        break;
+                    }
+                }
+            }
+        }
 
         if (player.isDashing()) {
             dashTimer -= delta;
@@ -230,7 +296,6 @@ public class GameController {
         else if (player.isFocusing()) {
             player.setVelocityX(0f);
             player.setVelocityY(0f);
-
             focusTimer += delta;
             if (focusTimer >= focusRequiredTime) {
                 if (player.getSoul() >= 33 && player.getHealth() < 5) {
@@ -245,21 +310,23 @@ public class GameController {
             else if (player.isMovingRight()) player.setVelocityX(400);
             else player.setVelocityX(0);
 
-            if (player.isAttacking()) {
+            if (player.isAttacking() || isPogoAttacking) {
                 attackTimer -= delta;
                 if (attackTimer <= 0) {
                     player.setAttacking(false);
+                    isPogoAttacking = false;
                 }
             }
         }
 
-        for(Entity entity : entities) {
+        for (Entity entity : entities) {
             applyPhysics(entity, delta);
             updateEntityAnimation(entity, delta);
         }
 
         if (player.isOnGround()) {
             hasDashedInAir = false;
+            hasDoubleJumped = false;
         }
     }
 

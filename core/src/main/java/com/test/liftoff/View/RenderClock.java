@@ -5,14 +5,14 @@ import com.test.liftoff.Enums.EntityState;
 
 public class RenderClock {
     private float animTime = 0f;
-    private AnimationType lastAnimation = null; // 💡 Track the visual asset sheet instead!
+    private AnimationType lastAnimation = null;
 
     public void update(AnimationType currentAnimation, float delta) {
         if (currentAnimation != lastAnimation) {
-            animTime = 0f;         // Only reset to frame 0 if the actual sheet changes
+            animTime = 0f;
             lastAnimation = currentAnimation;
         } else {
-            animTime += delta;     // Otherwise tick forward smoothly
+            animTime += delta;
         }
     }
 

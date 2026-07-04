@@ -100,21 +100,26 @@ public class GameScreen extends AbstractScreen{
                 return AnimationType.KnightRun;
             case JUMPING:
                 return AnimationType.KnightRegularJump;
+            case DOUBLE_JUMPING:
+                return AnimationType.KnightDoubleJump; // 💡 Distinct sheet matching criteria
             case FALLING:
                 return AnimationType.KnightFall;
             case LANDING:
                 return AnimationType.KnightRegularLanding;
             case DASHING:
-                // Safe Fallback: Uses run animation frames until you add a Dash sheet
                 return AnimationType.KnightDash;
-
             case ATTACKING:
-                // Safe Fallback: Uses run animation frames until you add an Attack sheet
-                return AnimationType.KnightSlash;
-
-            case FOCUSING:
-                // Safe Fallback: Character stands completely still using Idle sheet frames
-                return AnimationType.KnightFocus;
+                return AnimationType.KnightNailSlash;
+            case POGO_ATTACKING:
+                return AnimationType.KnightPogo; // 💡 Downward slash sheet texture
+            case FOCUS_START:
+                return AnimationType.KnightFocusStart;
+            case FOCUS_LOOPING:
+                return AnimationType.KnightFocusLoop;
+            case FOCUS_GET:
+                return AnimationType.KnightFocusGet;
+            case FOCUS_END:
+                return AnimationType.KnightFocusEnd;
             case IDLE:
             default:
                 return AnimationType.KnightIdle;

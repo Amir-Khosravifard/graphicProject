@@ -10,6 +10,7 @@ public class Player extends Entity{
     private boolean isDashing = false;
     private boolean isAttacking = false;
     private boolean isFocusing = false;
+    private boolean isLookingDown = false;
 
     private final Vector2 lastSafePosition = new Vector2();
 
@@ -23,6 +24,11 @@ public class Player extends Entity{
         this.soul += amount;
         if (this.soul > 99) this.soul = 99;
     }
+    // Add this field at the top:
+
+    // Add these getters and setters:
+    public boolean isLookingDown() { return isLookingDown; }
+    public void setLookingDown(boolean lookingDown) { this.isLookingDown = lookingDown; }
 
     public boolean isDashing() { return isDashing; }
     public void setDashing(boolean dashing) { this.isDashing = dashing; }
