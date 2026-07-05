@@ -4,13 +4,21 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.maps.MapObject;
+import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Stack;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.test.liftoff.Audio.SoundManager;
@@ -20,6 +28,7 @@ import com.test.liftoff.Enums.EntityState;
 import com.test.liftoff.Enums.LevelType;
 import com.test.liftoff.Model.Entity.Entity;
 import com.test.liftoff.Model.Entity.Player;
+import com.test.liftoff.Model.Entity.Spike;
 import com.test.liftoff.Tiled.TiledMapHelper;
 
 import java.util.ArrayList;
@@ -39,6 +48,13 @@ public class GameScreen extends AbstractScreen{
 
     private HashMap<Entity, RenderClock> visualClocks = new HashMap<>();
 
+
+    private Texture fullMaskTexture;
+    private Texture emptyMaskTexture;
+    private Texture vesselTexture;
+    private Texture[] liquidTextures;
+
+    private Matrix4 uiMatrix;
 
     private int[] backgroundLayers;
     private int[] foregroundLayers;
@@ -61,6 +77,14 @@ public class GameScreen extends AbstractScreen{
         gameProcessor = new GameProcessor(gameController);
 
 
+        fullMaskTexture = new Texture(Gdx.files.internal("animations/animation/HUD/FilledHealth.png"));
+        emptyMaskTexture = new Texture(Gdx.files.internal("animations/animation/HUD/EmptyHealth.png"));
+        vesselTexture = new Texture(Gdx.files.internal("animations/animation/HUD/HealthBar_005.png"));
+        liquidTextures = new Texture[10];
+        for (int i = 0; i < 10; i++) {
+            liquidTextures[i] = new Texture(Gdx.files.internal("animations/animation/HUD/liquidTexture/"+(i)+".png"));
+        }
+
         TiledMapHelper mapHelper = new TiledMapHelper();
         tiledMap = mapHelper.loadMap("tiledMaps/firstMap.tmx");
         mapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
@@ -75,14 +99,72 @@ public class GameScreen extends AbstractScreen{
         foregroundLayers = new int[]{frontLayerIdx};
 
         Vector2 spawnPoint = mapHelper.getObjectPosition(levelType.getObjectLayerName(), levelType.getSpawnPointName());        gameController.getPlayerPosition().set(spawnPoint);
+        gameController.getPlayerPosition().set(spawnPoint);
+        gameController.setSpawnPoint(spawnPoint);
 
         ArrayList<Rectangle> platforms = mapHelper.getCollisionRectangles("Object Layer 1");
         gameController.setPlatforms(platforms);
+
+        ArrayList<Spike> spikeModels = new ArrayList<>();
+        if (tiledMap.getLayers().get("Spikes") != null) {
+            for (MapObject object : tiledMap.getLayers().get("Spikes").getObjects()) {
+                if (object instanceof RectangleMapObject) {
+                    Rectangle rect = ((RectangleMapObject) object).getRectangle();
+                    spikeModels.add(new Spike(rect.x, rect.y, rect.width, rect.height));
+                }
+            }
+        }
+        gameController.setSpikes(spikeModels);
+
+
+
+
+        Player player = gameController.getPlayer();
+
+        // Instantiate the scaling component widget
+        SoulVesselWidget soulVessel = new SoulVesselWidget(player, vesselTexture, liquidTextures);
+
+        // MASK SCALING: Scale factor matching the 75% size reduction
+        float maskScale = 0.5f;
+        float scaledMaskW = fullMaskTexture.getWidth() * maskScale;
+        float scaledMaskH = fullMaskTexture.getHeight() * maskScale;
+
+        // Construct the row of 5 layout health masks
+        Table maskRowTable = new Table();
+        for (int i = 0; i < 5; i++) {
+            final int maskIndex = i;
+            Image maskImage = new Image(fullMaskTexture) {
+                @Override
+                public void draw(Batch batch, float parentAlpha) {
+                    if (maskIndex < player.getHealth()) {
+                        setDrawable(new Image(fullMaskTexture).getDrawable());
+                    } else {
+                        setDrawable(new Image(emptyMaskTexture).getDrawable());
+                    }
+                    super.draw(batch, parentAlpha);
+                }
+            };
+            maskRowTable.add(maskImage).size(scaledMaskW, scaledMaskH).padRight(4f * maskScale);
+        }
+
+        // =========================================================================
+        // 💡 ARCHITECTURE FIX: Mount directly to the inherited rootTable container
+        // =========================================================================
+        // Tell the inherited base canvas to align its rows strictly to the top-left edge
+        rootTable.top().left();
+
+        // Drop the elements straight into the managed layout stream
+        rootTable.add(soulVessel).top().padLeft(20f).padTop(10f);
+        rootTable.add(maskRowTable).top().padLeft(10f).padTop(18f);
+
+        // Remove the old stage.addActor(hudMasterTable) line!
+        // AbstractScreen handles drawing the rootTable automatically.
 
         InputMultiplexer inputMultiplexer = new InputMultiplexer();
         inputMultiplexer.addProcessor(stage);
         inputMultiplexer.addProcessor(gameProcessor);
         Gdx.input.setInputProcessor(inputMultiplexer);
+
 
 
     }
@@ -101,7 +183,7 @@ public class GameScreen extends AbstractScreen{
             case JUMPING:
                 return AnimationType.KnightRegularJump;
             case DOUBLE_JUMPING:
-                return AnimationType.KnightDoubleJump; // 💡 Distinct sheet matching criteria
+                return AnimationType.KnightDoubleJump;
             case FALLING:
                 return AnimationType.KnightFall;
             case LANDING:
@@ -111,7 +193,11 @@ public class GameScreen extends AbstractScreen{
             case ATTACKING:
                 return AnimationType.KnightNailSlash;
             case POGO_ATTACKING:
-                return AnimationType.KnightPogo; // 💡 Downward slash sheet texture
+                return AnimationType.KnightPogo;
+            case WALL_SLIDING:
+                return AnimationType.KnightWallSlide;
+            case WALL_JUMPING:
+                return AnimationType.KnightWallJump;
             case FOCUS_START:
                 return AnimationType.KnightFocusStart;
             case FOCUS_LOOPING:
@@ -148,6 +234,11 @@ public class GameScreen extends AbstractScreen{
 
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
+
+
+
+
+
         for (Entity entity : gameController.getEntities()) {
             if (!visualClocks.containsKey(entity)) {
                 visualClocks.put(entity, new RenderClock());
@@ -157,6 +248,12 @@ public class GameScreen extends AbstractScreen{
             AnimationType targetAnim = getAnimationTypeForState(entity.getCurrentState());
 
             clock.update(targetAnim, delta);
+
+            if (entity == player && gameController.getInvincibilityTimer() > 0f) {
+                if ((int)(gameController.getInvincibilityTimer() * 25) % 2 == 0) {
+                    continue;
+                }
+            }
 
             TextureRegion frame = getFrameFromAsset(targetAnim, clock.getAnimTime(), entity);
 
@@ -172,6 +269,7 @@ public class GameScreen extends AbstractScreen{
                 );
             }
         }
+//        stage.setDebugAll(true);
         batch.end();
 
 
@@ -190,6 +288,10 @@ public class GameScreen extends AbstractScreen{
 
 //        mapRenderer.render(foregroundLayers);
         mapRenderer.render(foregroundLayers);
+
+
+
+
 
 
         shapeRenderer.setProjectionMatrix(camera.combined);

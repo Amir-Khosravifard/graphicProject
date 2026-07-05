@@ -51,6 +51,9 @@ public class GameProcessor implements InputProcessor {
         else if(keyCode == Input.Keys.A){
             gameController.setFocusActive(true);
         }
+        else if (keyCode == Input.Keys.O) {
+            gameController.damagePlayer(1);
+        }
         return false;
     }
 

@@ -10,6 +10,8 @@ public enum EntityState {
     LANDING,
     DASHING,
     ATTACKING,
+    WALL_SLIDING,
+    WALL_JUMPING,
     FOCUS_START,
     FOCUS_LOOPING,
     FOCUS_GET,

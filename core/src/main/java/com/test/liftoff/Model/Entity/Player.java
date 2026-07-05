@@ -11,22 +11,30 @@ public class Player extends Entity{
     private boolean isAttacking = false;
     private boolean isFocusing = false;
     private boolean isLookingDown = false;
+    private boolean isWallSliding = false;
 
+
+    private final SoulVessel soulVessel = new SoulVessel();
     private final Vector2 lastSafePosition = new Vector2();
 
     public Player() {
         super(40f, 90f, 5);
     }
 
-    public int getSoul() { return soul; }
-    public void setSoul(int soul) { this.soul = soul; }
-    public void addSoul(int amount) {
-        this.soul += amount;
-        if (this.soul > 99) this.soul = 99;
-    }
-    // Add this field at the top:
+    public int getSoul() { return soulVessel.getSoul(); }
+    public void setSoul(int amount) { soulVessel.setSoul(amount); }
+    public void addSoul(int amount) { soulVessel.addSoul(amount); }
+    public SoulVessel getSoulVessel() { return soulVessel; }
 
-    // Add these getters and setters:
+
+    public boolean isWallSliding() {
+        return isWallSliding;
+    }
+
+    public void setWallSliding(boolean wallSliding) {
+        isWallSliding = wallSliding;
+    }
+
     public boolean isLookingDown() { return isLookingDown; }
     public void setLookingDown(boolean lookingDown) { this.isLookingDown = lookingDown; }
 
@@ -56,5 +64,15 @@ public class Player extends Entity{
 
     public void jump(){
         if(isOnGround) velocity.y = 500;
+    }
+
+    public boolean executeFocusHeal() {
+        // 💡 FIX: Check the active soulVessel component instead of the dead local field!
+        if (soulVessel.canAffordHeal() && this.health < 5) {
+            soulVessel.consumeSoulForHeal(); // Safely decrements exactly 33 points internally
+            this.health += 1;
+            return true; // Successfully healed!
+        }
+        return false; // Conditions not met (full health or out of soul)
     }
 }

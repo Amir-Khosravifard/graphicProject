@@ -6,6 +6,9 @@ import com.badlogic.gdx.math.Vector2;
 import com.test.liftoff.Enums.EntityState;
 import com.test.liftoff.Model.Entity.Entity;
 import com.test.liftoff.Model.Entity.Player;
+import com.test.liftoff.Model.Entity.Spike;
+import com.test.liftoff.Physics.CollisionResult;
+import com.test.liftoff.Physics.PhysicsEngine;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,6 +35,15 @@ public class GameController {
 
     private boolean hasDoubleJumped = false;
     private boolean isPogoAttacking = false;
+
+    private boolean wallLeft = false;
+    private boolean wallRight = false;
+
+    private ArrayList<Spike> spikes = new ArrayList<>();
+    private Vector2 spawnPoint = new Vector2();
+    private float invincibilityTimer = 0f;
+
+    private float wallJumpControlLockout = 0f;
 
     public void setPlatforms(ArrayList<Rectangle> platforms) {
         this.platforms = platforms;
@@ -61,13 +73,38 @@ public class GameController {
     public void setMovingLeft(boolean movingLeft){
         player.setMovingLeft(movingLeft);
     }
+
+    public float getInvincibilityTimer() {
+        return invincibilityTimer;
+    }
+
     public void jumpPlayer() {
         if (player.isDead() || player.isFocusing()) return;
 
         if (player.isOnGround()) {
-            player.getVelocity().y = 500f;
-        } else if (!hasDoubleJumped) {
-            player.getVelocity().y = 520f;
+            player.getVelocity().y = 500f; // Standard Jump
+        }
+        else if (player.isWallSliding() || wallLeft || wallRight) {
+            // 💡 WALL KICK TRIGGER: Propels player up and out away from the wall surface!
+            player.getVelocity().y = 480f;
+            wallJumpControlLockout = 0.15f; // Lock manual arrow controls briefly for game-feel
+//            player.setCurrentState(EntityState.WALL_JUMPING); // 💡 Set Wall Jump state immediately
+
+            if (wallRight) {
+                player.getVelocity().x = -420f;
+                player.setLookingRight(false); // Face left away from right wall
+            } else if (wallLeft) {
+                player.getVelocity().x = 420f;
+                player.setLookingRight(true);  // Face right away from left wall
+            }
+
+            // Hollow Knight Feature: Wall jumping completely refreshes your Double Jump capability!
+            hasDoubleJumped = false;
+            hasDashedInAir = false;
+            player.setWallSliding(false);
+        }
+        else if (!hasDoubleJumped) {
+            player.getVelocity().y = 520f; // Monarch Wings Double Jump
             hasDoubleJumped = true;
         }
     }
@@ -95,6 +132,7 @@ public class GameController {
 
 
 
+
     public void handlePlayerAttack() {
         if (player.isDashing() || player.isFocusing() || player.isDead()) return;
 
@@ -111,6 +149,27 @@ public class GameController {
         }
     }
 
+    public void damagePlayer(int amount) {
+        if (player.isDead() || invincibilityTimer > 0f) return;
+
+        if (player.isFocusing()) {
+            player.setFocusing(false);
+            focusTimer = 0f;
+        }
+
+        player.setHealth(player.getHealth() - amount);
+
+        if (player.getHealth() <= 0) {
+            player.getVelocity().set(0, 0);
+            player.getPosition().set(spawnPoint);
+            player.setHealth(5);
+            player.setSoul(0);
+            invincibilityTimer = 1.5f;
+        } else {
+            invincibilityTimer = 1.0f;
+        }
+    }
+
     public void setFocusActive(boolean active) {
         if (player.isDashing() || player.isAttacking() || !player.isOnGround() || player.isDead()) {
             player.setFocusing(false);
@@ -122,7 +181,11 @@ public class GameController {
         }
 
         if (active) {
-            player.setFocusing(true);
+            if (!player.isFocusing()) {
+                player.setFocusing(true);
+                player.setCurrentState(EntityState.FOCUS_START);
+                focusTimer = 0f;
+            }
         } else {
             if (player.isFocusing() && (player.getCurrentState() == EntityState.FOCUS_START || player.getCurrentState() == EntityState.FOCUS_LOOPING)) {
                 player.setCurrentState(EntityState.FOCUS_END);
@@ -132,83 +195,36 @@ public class GameController {
         }
     }
 
+    public void setSpikes(ArrayList<Spike> spikes) {
+        this.spikes = spikes;
+    }
+
+    public void setSpawnPoint(Vector2 spawnPoint) {
+        this.spawnPoint.set(spawnPoint);
+    }
+
 
     private void applyPhysics(Entity entity, float delta) {
 
-        boolean ignoreGravity = (entity == player && player.isDashing());
+        CollisionResult result = PhysicsEngine.resolveMovement(entity, delta, platforms);
 
+        // Process state updates for the player based on what the physics engine encountered
+        if (entity == player) {
+            // Adjust these to match the exact getter names you wrote inside your CollisionResult class
+            this.wallLeft = result.isTouchingLeft() && !player.isOnGround();
+            this.wallRight = result.isTouchingRight() && !player.isOnGround();
 
-        if(!entity.isOnGround() && !ignoreGravity) {
-            entity.setVelocityY(entity.getVelocity().y - gravity * delta);
-        }
+            boolean scrapingWall = (wallRight && player.isMovingRight()) || (wallLeft && player.isMovingLeft());
 
-        float maxStepTime = 0.003f;
-        float accumulator = delta;
+            if (scrapingWall && player.getVelocity().y < 0) {
+                player.setWallSliding(true);
+                player.getVelocity().y = -140f;
 
-        entity.setOnGround(false);
-
-        while (accumulator > 0) {
-            float stepDelta = Math.min(accumulator, maxStepTime);
-            accumulator -= stepDelta;
-
-            entity.setPositionX(entity.getPosition().x + entity.getVelocity().x * stepDelta);
-            if (platforms != null) {
-                Rectangle bounds = new Rectangle(entity.getPosition().x, entity.getPosition().y, entity.getWidth(), entity.getHeight());
-                for (Rectangle platform : platforms) {
-                    if (bounds.overlaps(platform)) {
-                        if (entity.getVelocity().x > 0) entity.setPositionX(platform.x - entity.getWidth());
-                        else if (entity.getVelocity().x < 0) entity.setPositionX(platform.x + platform.width);
-                        entity.setVelocityX(0);
-                        break;
-                    }
-                }
-            }
-
-            entity.setPositionY(entity.getPosition().y + entity.getVelocity().y * stepDelta);
-            if (platforms != null) {
-                Rectangle bounds = new Rectangle(entity.getPosition().x, entity.getPosition().y, entity.getWidth(), entity.getHeight());
-                for (Rectangle platform : platforms) {
-                    if (bounds.overlaps(platform)) {
-                        if (entity.getVelocity().y <= 0) {
-                            entity.setPositionY(platform.y + platform.height);
-                            entity.setVelocityY(0);
-                            entity.setOnGround(true);
-                        } else if (entity.getVelocity().y > 0) {
-                            entity.setPositionY(platform.y - entity.getHeight());
-                            entity.setVelocityY(0);
-                        }
-                        break;
-                    }
-                }
-            }
-        }
-
-        entity.setOnGround(false);
-        if (platforms != null) {
-            Rectangle groundCheck = new Rectangle(entity.getPosition().x, entity.getPosition().y - 1f, entity.getWidth(), 1f);
-            for (Rectangle platform : platforms) {
-                if (groundCheck.overlaps(platform)) {
-                    entity.setOnGround(true);
-                    entity.setVelocityY(0);
-                    break;
-                }
-            }
-        }
-
-        if (isPogoAttacking && player.getVelocity().y <= 0) {
-            Rectangle pogoHitbox = new Rectangle(player.getPosition().x, player.getPosition().y - 15f, player.getWidth(), 15f);
-            if (platforms != null) {
-                for (Rectangle platform : platforms) {
-                    if (pogoHitbox.overlaps(platform)) {
-                        player.getVelocity().y = 550f;
-                        isPogoAttacking = false;
-                        player.setAttacking(false);
-
-                        hasDashedInAir = false;
-                        hasDoubleJumped = false;
-                        break;
-                    }
-                }
+                // 💡 FIXED: Inverted these two lines to correctly align your WallSlide sheet orientation!
+                if (wallRight) player.setLookingRight(true);
+                if (wallLeft)  player.setLookingRight(false);
+            } else {
+                player.setWallSliding(false);
             }
         }
     }
@@ -220,8 +236,16 @@ public class GameController {
         if (entity == player && player.isDashing()) {
             nextState = EntityState.DASHING;
             landingTimers.remove(entity);
-
-        } else if (entity == player && isPogoAttacking) {
+        }
+        else if (entity == player && wallJumpControlLockout > 0) {
+            nextState = EntityState.WALL_JUMPING;
+            landingTimers.remove(entity);
+        }
+        else if (entity == player && player.isWallSliding()) {
+            nextState = EntityState.WALL_SLIDING;
+            landingTimers.remove(entity);
+        }
+        else if (entity == player && isPogoAttacking) {
             nextState = EntityState.POGO_ATTACKING;
             landingTimers.remove(entity);
         } else if (entity == player && player.isAttacking()) {
@@ -267,6 +291,20 @@ public class GameController {
     public void update(float delta) {
         if (player.isDead()) return;
         if (dashCooldownTimer > 0) dashCooldownTimer -= delta;
+        if (invincibilityTimer > 0) {
+            invincibilityTimer -= delta;
+        }
+        if (wallJumpControlLockout > 0) wallJumpControlLockout -= delta;
+
+        if (spikes != null && invincibilityTimer <= 0f) {
+            Rectangle playerBounds = new Rectangle(player.getPosition().x, player.getPosition().y, player.getWidth(), player.getHeight());
+            for (Spike spike : spikes) {
+                if (playerBounds.overlaps(spike.getBounds())) {
+                    damagePlayer(1);
+                    break;
+                }
+            }
+        }
 
         if (isPogoAttacking && player.getVelocity().y <= 0) {
             Rectangle pogoHitbox = new Rectangle(player.getPosition().x, player.getPosition().y - 15f, player.getWidth(), 15f);
@@ -293,22 +331,53 @@ public class GameController {
                 player.setVelocityY(0f);
             }
         }
-        else if (player.isFocusing()) {
+        else if (player.isFocusing() || player.getCurrentState() == EntityState.FOCUS_END || player.getCurrentState() == EntityState.FOCUS_GET) {
             player.setVelocityX(0f);
             player.setVelocityY(0f);
             focusTimer += delta;
-            if (focusTimer >= focusRequiredTime) {
-                if (player.getSoul() >= 33 && player.getHealth() < 5) {
-                    player.setSoul(player.getSoul() - 33);
-                    player.setHealth(player.getHealth() + 1);
-                }
+
+            if (player.getCurrentState() == EntityState.FOCUS_START && focusTimer >= 0.10f) {
+                player.setCurrentState(EntityState.FOCUS_LOOPING);
                 focusTimer = 0f;
             }
+            else if (player.getCurrentState() == EntityState.FOCUS_LOOPING) {
+                if (focusTimer >= focusRequiredTime) { // Requires 1.5 seconds
+
+                    // 💡 DELEGATION: Ask the player model to handle its own math internally
+                    if (player.executeFocusHeal()) {
+                        player.setCurrentState(EntityState.FOCUS_GET); // Play success burst
+                    } else {
+                        player.setCurrentState(EntityState.FOCUS_END);
+                        player.setFocusing(false);
+                    }
+                    focusTimer = 0f;
+                }
+            }
+            else if (player.getCurrentState() == EntityState.FOCUS_GET && focusTimer >= 0.20f) {
+                player.setCurrentState(EntityState.FOCUS_END);
+                player.setFocusing(false);
+                focusTimer = 0f;
+            }
+            // Phase D: Standing clean reset window exit
+            else if (player.getCurrentState() == EntityState.FOCUS_END && focusTimer >= 0.10f) {
+                player.setCurrentState(EntityState.IDLE);
+                focusTimer = 0f;
+            }
+
+
         }
         else {
-            if (player.isMovingLeft()) player.setVelocityX(-400);
-            else if (player.isMovingRight()) player.setVelocityX(400);
-            else player.setVelocityX(0);
+            if (wallJumpControlLockout <= 0) {
+                if (player.isMovingLeft()) {
+                    player.setVelocityX(-400);
+                    player.setLookingRight(false);
+                } else if (player.isMovingRight()) {
+                    player.setVelocityX(400);
+                    player.setLookingRight(true);
+                } else {
+                    player.setVelocityX(0);
+                }
+            }
 
             if (player.isAttacking() || isPogoAttacking) {
                 attackTimer -= delta;
@@ -327,6 +396,7 @@ public class GameController {
         if (player.isOnGround()) {
             hasDashedInAir = false;
             hasDoubleJumped = false;
+            wallJumpControlLockout = 0f;
         }
     }
 

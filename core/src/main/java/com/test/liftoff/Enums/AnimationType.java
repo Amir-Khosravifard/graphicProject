@@ -15,7 +15,9 @@ public enum AnimationType {
     KnightFocusGet("animations/animation/Focus Get.png", 6, Animation.PlayMode.NORMAL),
     KnightFocusEnd("animations/animation/Focus End.png", 3, Animation.PlayMode.NORMAL),
     KnightDoubleJump("animations/animation/Double Jump.png", 8, Animation.PlayMode.NORMAL),
-    KnightPogo("animations/animation/DownSlash.png", 5, Animation.PlayMode.NORMAL);
+    KnightPogo("animations/animation/DownSlash.png", 5, Animation.PlayMode.NORMAL),
+    KnightWallSlide("animations/animation/Wall Slide.png", 4, Animation.PlayMode.LOOP),
+    KnightWallJump("animations/animation/WallJump.png", 9, Animation.PlayMode.NORMAL);
 
 
     private final String path;

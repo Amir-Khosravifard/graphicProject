@@ -501,6 +501,7 @@ animations/animation/HUD/FilledHealthShine_001.png
 animations/animation/HUD/FilledHealthShine_002.png
 animations/animation/HUD/FilledHealthShine_003.png
 animations/animation/HUD/FilledHealthShine_004.png
+animations/animation/HUD/HUD Cln_0.png
 animations/animation/HUD/HUD Cln_000.png
 animations/animation/HUD/HUD Cln_001.png
 animations/animation/HUD/HUD Cln_002.png
@@ -595,6 +596,7 @@ animations/animation/HUD/HUD Cln_096.png
 animations/animation/HUD/HUD Cln_097.png
 animations/animation/HUD/HUD Cln_098.png
 animations/animation/HUD/HUD Cln_099.png
+animations/animation/HUD/HUD Cln_1.png
 animations/animation/HUD/HUD Cln_100.png
 animations/animation/HUD/HUD Cln_101.png
 animations/animation/HUD/HUD Cln_102.png
@@ -694,6 +696,7 @@ animations/animation/HUD/HUD Cln_196.png
 animations/animation/HUD/HUD Cln_197.png
 animations/animation/HUD/HUD Cln_198.png
 animations/animation/HUD/HUD Cln_199.png
+animations/animation/HUD/HUD Cln_2.png
 animations/animation/HUD/HUD Cln_200.png
 animations/animation/HUD/HUD Cln_201.png
 animations/animation/HUD/HUD Cln_202.png
@@ -748,6 +751,7 @@ animations/animation/HUD/HUD Cln_265.png
 animations/animation/HUD/HUD Cln_266.png
 animations/animation/HUD/HUD Cln_267.png
 animations/animation/HUD/HUD Cln_268.png
+animations/animation/HUD/HUD Cln_3.png
 animations/animation/HUD/HealthBar.png
 animations/animation/HUD/HealthBar_000.png
 animations/animation/HUD/HealthBar_001.png
@@ -766,6 +770,17 @@ animations/animation/HUD/SoulOrb_Eye.png
 animations/animation/HUD/SoulOrb_Full.png
 animations/animation/HUD/SoulOrb_Full2.png
 animations/animation/HUD/SoulOrb_Half.png
+animations/animation/HUD/liquidTexture/0.png
+animations/animation/HUD/liquidTexture/1.png
+animations/animation/HUD/liquidTexture/2.png
+animations/animation/HUD/liquidTexture/3.png
+animations/animation/HUD/liquidTexture/4.png
+animations/animation/HUD/liquidTexture/5-notused.png
+animations/animation/HUD/liquidTexture/5.png
+animations/animation/HUD/liquidTexture/6.png
+animations/animation/HUD/liquidTexture/7.png
+animations/animation/HUD/liquidTexture/8.png
+animations/animation/HUD/liquidTexture/9.png
 animations/animation/Husk_Hornhead/Attack Anticipate.png
 animations/animation/Husk_Hornhead/Attack Anticipate_000.png
 animations/animation/Husk_Hornhead/Attack Anticipate_001.png
