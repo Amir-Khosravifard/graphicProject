@@ -32,11 +32,18 @@ public abstract class Entity {
         }
     }
 
+
+    public boolean isIgnoringGravity() {
+        return false;
+    }
+
     public Entity(float width, float height, int maxHealth) {
         this.width = width;
         this.height = height;
         this.health = maxHealth;
     }
+
+    public abstract AnimationType getAnimationType();
 
     public EntityState getCurrentState() { return currentState; }
     public void setCurrentState(EntityState newState) { this.currentState = newState; }
@@ -59,6 +66,14 @@ public abstract class Entity {
     public void setLookingRight(boolean lookingRight) { this.isLookingRight = lookingRight; }
 
 
+    public float getSpriteOffsetX(float frameWidth) {
+        return (frameWidth - this.width) / 2f;
+    }
+
+    // 💡 Provide a default vertical anchor calculation
+    public float getSpriteOffsetY(float frameHeight) {
+        return 0f;
+    }
 
 
 }

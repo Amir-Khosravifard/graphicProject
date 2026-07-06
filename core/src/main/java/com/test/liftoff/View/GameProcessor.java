@@ -16,7 +16,11 @@ public class GameProcessor implements InputProcessor {
     @Override
     public boolean keyDown(int keyCode) {
         if(keyCode == Input.Keys.ESCAPE){
-            PauseModal pauseModal = new PauseModal(){
+            if (gameController.isPaused()) return false; // Prevent stacking multiple pause menus
+
+            gameController.setPaused(true); // 💡 Pause the game logic instantly
+
+            PauseModal pauseModal = new PauseModal() {
                 @Override
                 public void onExit() {
                     UIManager.changeScreen(new StartGameScreen());
@@ -25,6 +29,13 @@ public class GameProcessor implements InputProcessor {
                 @Override
                 public void onResume() {
                     hide();
+                }
+
+                // 💡 OVERRIDE: Captures BOTH the resume button click AND clicking outside the window box
+                @Override
+                public void hide() {
+                    super.hide();
+                    gameController.setPaused(false); // 💡 Safely unpause the engine
                 }
             };
             pauseModal.show();

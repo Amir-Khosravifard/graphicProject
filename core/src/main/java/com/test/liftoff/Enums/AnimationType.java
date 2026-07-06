@@ -17,7 +17,37 @@ public enum AnimationType {
     KnightDoubleJump("animations/animation/Double Jump.png", 8, Animation.PlayMode.NORMAL),
     KnightPogo("animations/animation/DownSlash.png", 5, Animation.PlayMode.NORMAL),
     KnightWallSlide("animations/animation/Wall Slide.png", 4, Animation.PlayMode.LOOP),
-    KnightWallJump("animations/animation/WallJump.png", 9, Animation.PlayMode.NORMAL);
+    KnightWallJump("animations/animation/WallJump.png", 9, Animation.PlayMode.NORMAL),
+
+    Crawlid_walk("animations/animation/Crawlid/Walk.png", 4, Animation.PlayMode.LOOP),
+    Crawlid_turn("animations/animation/Crawlid/Turn.png", 2, Animation.PlayMode.NORMAL),
+    Crawlid_death_land("animations/animation/Crawlid/Death Land.png", 2, Animation.PlayMode.NORMAL),
+    Crawlid_death_air("animations/animation/Crawlid/Death Air.png", 3, Animation.PlayMode.NORMAL),
+
+    // 💡 Mosquito Sheets
+    Mosquito_idle("animations/animation/Mosquito/Idle.png", 8, Animation.PlayMode.LOOP),
+    Mosquito_attack_anticipate("animations/animation/Mosquito/Attack Anticipate.png", 6, Animation.PlayMode.NORMAL),
+    Mosquito_attack("animations/animation/Mosquito/Attack.png", 3, Animation.PlayMode.LOOP),
+    Mosquito_death_air("animations/animation/Mosquito/Death Air.png", 3, Animation.PlayMode.NORMAL),
+    Mosquito_death_land("animations/animation/Mosquito/Death Land.png", 2, Animation.PlayMode.NORMAL),
+
+    // 💡 Hornhead Sheets
+    Hornhead_idle("animations/animation/Husk_Hornhead/Idle.png", 6, Animation.PlayMode.LOOP),
+    Hornhead_walk("animations/animation/Husk_Hornhead/Walk.png", 7, Animation.PlayMode.LOOP),
+    Hornhead_attack_anticipate("animations/animation/Husk_Hornhead/Attack Anticipate.png", 5, Animation.PlayMode.NORMAL),
+    Hornhead_attack_lunge("animations/animation/Husk_Hornhead/Attack Lunge.png", 12, Animation.PlayMode.LOOP),
+    Hornhead_death_land("animations/animation/Husk_Hornhead/Death Land.png", 8, Animation.PlayMode.NORMAL),
+
+    // 💡 Crystallized (Crystal Guardian) Sheets
+    Crystallized_idle("animations/animation/Crystallized/Idle.png", 5, Animation.PlayMode.LOOP),
+    Crystallized_run("animations/animation/Crystallized/Run.png", 6, Animation.PlayMode.LOOP),
+    Crystallized_shoot("animations/animation/Crystallized/Shoot.png", 7, Animation.PlayMode.NORMAL),
+    Crystallized_laser("animations/animation/Effects/CrystalLaser.png", 5, Animation.PlayMode.LOOP),
+    Crystallized_death("animations/animation/Crystallized/Death Land.png", 3, Animation.PlayMode.LOOP),
+
+    DashEffect("animations/animation/Effects/Dash Effect.png", 8, Animation.PlayMode.NORMAL),
+    SideSlashEffect("animations/animation/Effects/SlashEffect.png", 4, Animation.PlayMode.NORMAL),
+    DownSlashEffect("animations/animation/Effects/DownSlashEffect.png", 6, Animation.PlayMode.NORMAL);
 
 
     private final String path;

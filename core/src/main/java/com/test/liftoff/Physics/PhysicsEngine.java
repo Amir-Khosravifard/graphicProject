@@ -11,7 +11,7 @@ public class PhysicsEngine {
 
     public static CollisionResult resolveMovement(Entity entity, float delta, ArrayList<Rectangle> platforms) {
         CollisionResult result = new CollisionResult();
-        boolean ignoreGravity = (entity instanceof Player && ((Player) entity).isDashing());
+        boolean ignoreGravity = entity.isIgnoringGravity();
 
         if (!entity.isOnGround() && !ignoreGravity) {
             entity.setVelocityY(entity.getVelocity().y - GRAVITY * delta);
@@ -33,7 +33,6 @@ public class PhysicsEngine {
                         if (entity.getVelocity().x > 0) {
                             entity.setPositionX(platform.x - entity.getWidth());
                             result.setTouchingRight(true);
-                            ;
                         } else if (entity.getVelocity().x < 0) {
                             entity.setPositionX(platform.x + platform.width);
                             result.setTouchingLeft(true);
@@ -73,7 +72,6 @@ public class PhysicsEngine {
                 }
             }
         }
-
         return result;
     }
 }

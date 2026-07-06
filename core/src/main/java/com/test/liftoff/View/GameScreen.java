@@ -24,12 +24,19 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.test.liftoff.Audio.SoundManager;
 import com.test.liftoff.Controller.GameController;
 import com.test.liftoff.Enums.AnimationType;
+import com.test.liftoff.Enums.EnemyState;
 import com.test.liftoff.Enums.EntityState;
 import com.test.liftoff.Enums.LevelType;
+import com.test.liftoff.Model.Enemy.Crawlid;
+import com.test.liftoff.Model.Enemy.CrystalGuardian;
+import com.test.liftoff.Model.Enemy.Hornhead;
+import com.test.liftoff.Model.Enemy.Mosquito;
 import com.test.liftoff.Model.Entity.Entity;
 import com.test.liftoff.Model.Entity.Player;
 import com.test.liftoff.Model.Entity.Spike;
 import com.test.liftoff.Tiled.TiledMapHelper;
+import com.test.liftoff.View.AnimationResolver.AnimationResolver;
+import com.test.liftoff.View.AnimationResolver.PlayerAnimationResolver;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,6 +52,7 @@ public class GameScreen extends AbstractScreen{
     private LevelType levelType;
     private TiledMap tiledMap;
     private OrthogonalTiledMapRenderer mapRenderer;
+
 
     private HashMap<Entity, RenderClock> visualClocks = new HashMap<>();
 
@@ -119,6 +127,15 @@ public class GameScreen extends AbstractScreen{
 
 
 
+        if (tiledMap.getLayers().get(levelType.getObjectLayerName()).getObjects().get("enemySpawn") != null) {
+            Vector2 enemySpawn = mapHelper.getObjectPosition(levelType.getObjectLayerName(), "enemySpawn");
+            gameController.spawnEnemy(new CrystalGuardian(enemySpawn.x, enemySpawn.y));
+        }
+
+
+
+
+
         Player player = gameController.getPlayer();
 
         // Instantiate the scaling component widget
@@ -176,41 +193,41 @@ public class GameScreen extends AbstractScreen{
         viewport.update(width, height);
     }
 
-    private AnimationType getAnimationTypeForState(EntityState state) {
-        switch (state) {
-            case RUNNING:
-                return AnimationType.KnightRun;
-            case JUMPING:
-                return AnimationType.KnightRegularJump;
-            case DOUBLE_JUMPING:
-                return AnimationType.KnightDoubleJump;
-            case FALLING:
-                return AnimationType.KnightFall;
-            case LANDING:
-                return AnimationType.KnightRegularLanding;
-            case DASHING:
-                return AnimationType.KnightDash;
-            case ATTACKING:
-                return AnimationType.KnightNailSlash;
-            case POGO_ATTACKING:
-                return AnimationType.KnightPogo;
-            case WALL_SLIDING:
-                return AnimationType.KnightWallSlide;
-            case WALL_JUMPING:
-                return AnimationType.KnightWallJump;
-            case FOCUS_START:
-                return AnimationType.KnightFocusStart;
-            case FOCUS_LOOPING:
-                return AnimationType.KnightFocusLoop;
-            case FOCUS_GET:
-                return AnimationType.KnightFocusGet;
-            case FOCUS_END:
-                return AnimationType.KnightFocusEnd;
-            case IDLE:
-            default:
-                return AnimationType.KnightIdle;
-        }
-    }
+//    private AnimationType getAnimationTypeForState(EntityState state) {
+//        switch (state) {
+//            case RUNNING:
+//                return AnimationType.KnightRun;
+//            case JUMPING:
+//                return AnimationType.KnightRegularJump;
+//            case DOUBLE_JUMPING:
+//                return AnimationType.KnightDoubleJump;
+//            case FALLING:
+//                return AnimationType.KnightFall;
+//            case LANDING:
+//                return AnimationType.KnightRegularLanding;
+//            case DASHING:
+//                return AnimationType.KnightDash;
+//            case ATTACKING:
+//                return AnimationType.KnightNailSlash;
+//            case POGO_ATTACKING:
+//                return AnimationType.KnightPogo;
+//            case WALL_SLIDING:
+//                return AnimationType.KnightWallSlide;
+//            case WALL_JUMPING:
+//                return AnimationType.KnightWallJump;
+//            case FOCUS_START:
+//                return AnimationType.KnightFocusStart;
+//            case FOCUS_LOOPING:
+//                return AnimationType.KnightFocusLoop;
+//            case FOCUS_GET:
+//                return AnimationType.KnightFocusGet;
+//            case FOCUS_END:
+//                return AnimationType.KnightFocusEnd;
+//            case IDLE:
+//            default:
+//                return AnimationType.KnightIdle;
+//        }
+//    }
     private TextureRegion getFrameFromAsset(AnimationType animationType, float visualTime, Entity entity) {
         TextureRegion frame = AssetManager.getAnimation(animationType).getKeyFrame(visualTime);
 
@@ -220,9 +237,31 @@ public class GameScreen extends AbstractScreen{
         return frame;
     }
 
+    // 💡 ADDED: Guarantees that visual effect sheets match the player's direction without turning backwards
+    private TextureRegion getEffectFrame(AnimationType effectType, float visualTime, boolean assetNaturallyFacesRight) {
+        TextureRegion frame = AssetManager.getAnimation(effectType).getKeyFrame(visualTime);
+        if (frame == null) return null;
+
+        boolean playerFacingRight = gameController.getPlayer().isLookingRight();
+
+        if (assetNaturallyFacesRight) {
+            // Right-facing assets (Dash, SideSlash) need to flip ONLY when looking left
+            if (!playerFacingRight && !frame.isFlipX()) frame.flip(true, false);
+            else if (playerFacingRight && frame.isFlipX()) frame.flip(true, false);
+        } else {
+            // Left-facing or symmetrical assets (DownSlash) follow standard character flipping
+            if (playerFacingRight && !frame.isFlipX()) frame.flip(true, false);
+            else if (!playerFacingRight && frame.isFlipX()) frame.flip(true, false);
+        }
+
+        return frame;
+    }
+
     @Override
     public void renderWorld(float delta) {
         gameController.update(delta);
+
+        float effectiveDelta = gameController.isPaused() ? 0f : delta;
 
         Player player = gameController.getPlayer();
         camera.position.set(player.getPosition().x, player.getPosition().y, 0);
@@ -245,10 +284,11 @@ public class GameScreen extends AbstractScreen{
             }
             RenderClock clock = visualClocks.get(entity);
 
-            AnimationType targetAnim = getAnimationTypeForState(entity.getCurrentState());
-
-            clock.update(targetAnim, delta);
-
+            // =========================================================================
+            // 💡 PURE OOP POLYMORPHISM: No map lookups, no weird interfaces.
+            // =========================================================================
+            AnimationType targetAnim = entity.getAnimationType();
+            clock.update(targetAnim, effectiveDelta);
             if (entity == player && gameController.getInvincibilityTimer() > 0f) {
                 if ((int)(gameController.getInvincibilityTimer() * 25) % 2 == 0) {
                     continue;
@@ -259,15 +299,129 @@ public class GameScreen extends AbstractScreen{
 
 
             if (frame != null) {
-                float spriteOffsetX = ((frame.getRegionWidth() - entity.getWidth()) / 2f) - 5f;
-                float spriteOffsetY = 0f;
+                float spriteOffsetX = entity.getSpriteOffsetX(frame.getRegionWidth());
+                float spriteOffsetY = entity.getSpriteOffsetY(frame.getRegionHeight());
 
                 batch.draw(
                     frame,
                     entity.getPosition().x - spriteOffsetX,
                     entity.getPosition().y - spriteOffsetY
                 );
+                if (entity == player) {
+                    TextureRegion effectFrame = null;
+                    float effectX = player.getPosition().x;
+                    float effectY = player.getPosition().y;
+
+                    // 1. Normal Forward Side Slash Overlay
+                    // 1. Normal Forward Side Slash Overlay
+                    if (player.getCurrentState() == EntityState.ATTACKING) {
+                        // 💡 FLIP FIX: Changed naturallyFacesRight from true to false to invert the slash arc orientation
+                        effectFrame = getEffectFrame(AnimationType.SideSlashEffect, clock.getAnimTime(), false);
+
+                        float effectWidth = effectFrame.getRegionWidth();
+
+                        if (player.isLookingRight()) {
+                            // 💡 Pushed slightly forward from player left-edge anchor
+                            effectX += 15f;
+                        } else {
+                            // 💡 THE FIX: Subtract the width of the texture so it expands OUTWARD to the left symmetrically!
+                            effectX -= (effectWidth - 25f);
+                        }
+
+                        effectY += 15f; // Vertical centering stabilizer
+                    }
+
+                    // 2. Downward Pogo Attack Slash Overlay
+                    else if (player.getCurrentState() == EntityState.POGO_ATTACKING) {
+                        effectFrame = getEffectFrame(AnimationType.DownSlashEffect, clock.getAnimTime(), false);
+
+                        // Center the downward scoop right under the player's collision bounds
+                        effectX += (player.getWidth() - effectFrame.getRegionWidth()) / 2f;
+                        effectY -= (effectFrame.getRegionHeight() - 15f);
+                    }
+
+                    // 3. Directional Ghost Dash Trail Overlay
+                    // 3. Directional Ghost Dash Trail Overlay
+                    else if (player.getCurrentState() == EntityState.DASHING) {
+                        effectFrame = getEffectFrame(AnimationType.DashEffect, clock.getAnimTime(), true);
+
+                        if (player.isLookingRight()) {
+                            // 💡 DASH RIGHT: Anchor the trail behind the player's left side
+                            effectX = player.getPosition().x - 400f;
+                        } else {
+                            // 💡 DASH LEFT: Anchor the trail starting at the player's right edge (width = 40)
+                            // and let it naturally expand backward to the right!
+                            effectX = player.getPosition().x + player.getWidth() + 15f;
+                        }
+
+                        // Vertical alignment: Centers the dash wind relative to the player's height (90px)
+                        effectY = player.getPosition().y + (player.getHeight() - effectFrame.getRegionHeight()) / 2f;
+                    }
+
+                    // Draw the visual effect if active
+                    if (effectFrame != null) {
+                        batch.draw(effectFrame, effectX, effectY);
+                    }
+                }
+
+                // =========================================================================
+                // 💡 BOSS ATTACK OVERLAY: Loops and mirrors the laser segment horizontally
+                // =========================================================================
+                if (entity instanceof CrystalGuardian) {
+                    CrystalGuardian guardian = (CrystalGuardian) entity;
+
+                    if (guardian.getEnemyState() == EnemyState.ATTACK) {
+                        // Dynamically pull the active swirling animation frame
+                        TextureRegion laserFrame = AssetManager.getAnimation(AnimationType.Crystallized_laser).getKeyFrame(clock.getAnimTime());
+
+                        if (laserFrame != null) {
+                            // 💡 THE FIXES: Infinite length, thicker beam, and proportional texture segments
+                            float beamLength = 2500f;  // Shoots completely across the entire map screen
+                            float beamHeight = 95f;    // Thicker, high-damage beam core
+                            float segmentWidth = 190f; // Scaled up to keep the laser from looking squished
+
+                            // Recalculate vertical alignment so the thicker beam stays centered on his chest
+                            float laserY = guardian.getPosition().y + (guardian.getHeight() / 2f) - (beamHeight / 2f);
+                            float currentX = guardian.getPosition().x;
+
+                            boolean toggleMirror = false; // Tracks alternating flips for seamless seams
+
+                            if (guardian.isLookingRight()) {
+                                currentX += guardian.getWidth() - 15f; // Fire from right-hand side
+                                float endX = currentX + beamLength;
+
+                                while (currentX < endX) {
+                                    if (laserFrame.isFlipX()) laserFrame.flip(true, false);
+                                    if (toggleMirror) laserFrame.flip(true, false);
+
+                                    batch.draw(laserFrame, currentX, laserY, segmentWidth, beamHeight);
+
+                                    if (toggleMirror) laserFrame.flip(true, false);
+
+                                    currentX += segmentWidth;
+                                    toggleMirror = !toggleMirror;
+                                }
+                            } else {
+                                currentX += 15f; // Fire from left-hand side
+                                float endX = currentX - beamLength;
+
+                                while (currentX > endX) {
+                                    if (!laserFrame.isFlipX()) laserFrame.flip(true, false);
+                                    if (toggleMirror) laserFrame.flip(true, false);
+
+                                    batch.draw(laserFrame, currentX - segmentWidth, laserY, segmentWidth, beamHeight);
+
+                                    if (toggleMirror) laserFrame.flip(true, false);
+
+                                    currentX -= segmentWidth;
+                                    toggleMirror = !toggleMirror;
+                                }
+                            }
+                        }
+                    }
+                }
             }
+
         }
 //        stage.setDebugAll(true);
         batch.end();
@@ -292,9 +446,35 @@ public class GameScreen extends AbstractScreen{
 
 
 
-
-
         shapeRenderer.setProjectionMatrix(camera.combined);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        shapeRenderer.setColor(com.badlogic.gdx.graphics.Color.RED);
+
+        for (Entity entity : gameController.getEntities()) {
+            shapeRenderer.rect(
+                entity.getPosition().x,
+                entity.getPosition().y,
+                entity.getWidth(),
+                entity.getHeight()
+            );
+        }
+
+        Rectangle activeAttack = gameController.getAttackBox();
+        if (activeAttack != null) {
+            shapeRenderer.setColor(com.badlogic.gdx.graphics.Color.CYAN);
+            shapeRenderer.rect(
+                activeAttack.x,
+                activeAttack.y,
+                activeAttack.width,
+                activeAttack.height
+            );
+        }
+
+        shapeRenderer.end();
+
+
+
+//        shapeRenderer.setProjectionMatrix(camera.combined);
 
 //
 //        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);

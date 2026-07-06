@@ -1185,6 +1185,10 @@ sounds/S19 Crossroads Main.wav
 sounds/S5 Green Path Main.wav
 sounds/S61-216 Hollow Knight.wav
 sounds/Title.wav
+sounds/focus_health_heal.wav
+sounds/hero_damage.wav
+sounds/nailSlash.wav
+sounds/nailSlash2.wav
 tiledMaps/blade.tsx
 tiledMaps/crystal1.tsx
 tiledMaps/crystalPath.tsx
