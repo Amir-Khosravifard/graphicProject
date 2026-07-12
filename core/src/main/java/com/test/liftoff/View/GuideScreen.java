@@ -71,7 +71,7 @@ public class GuideScreen extends AbstractScreen {
         section1.add(controlsLabel).left().row();
 
 
-        contentTable.add(section1).width(900f).height(180f).center().padBottom(25).row();
+        contentTable.add(section1).width(900f).height(220f).center().padBottom(25).row();
 
 
         Table section2 = new Table();
@@ -114,7 +114,7 @@ public class GuideScreen extends AbstractScreen {
         addCheatRow(section3, "Ctrl + K", "Sovereign Obliteration pulse (Instantly kills all active level monsters).", codeStyle, textStyle);
 
 
-        contentTable.add(section3).width(900f).height(260f).center().padBottom(25).row();
+        contentTable.add(section3).width(900f).height(300f).center().padBottom(25).row();
 
         ScrollPane.ScrollPaneStyle customScrollStyle = new ScrollPane.ScrollPaneStyle(skin.get(ScrollPane.ScrollPaneStyle.class));
         customScrollStyle.background = null;
