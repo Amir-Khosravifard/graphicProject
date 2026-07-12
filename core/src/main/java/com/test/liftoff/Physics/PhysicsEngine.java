@@ -11,6 +11,14 @@ public class PhysicsEngine {
 
     public static CollisionResult resolveMovement(Entity entity, float delta, ArrayList<Rectangle> platforms) {
         CollisionResult result = new CollisionResult();
+
+
+        if (entity instanceof Player && ((Player) entity).isNoclip()) {
+            entity.setPositionX(entity.getPosition().x + entity.getVelocity().x * delta);
+            entity.setPositionY(entity.getPosition().y + entity.getVelocity().y * delta);
+            return result;
+        }
+
         boolean ignoreGravity = entity.isIgnoringGravity();
 
         if (!entity.isOnGround() && !ignoreGravity) {

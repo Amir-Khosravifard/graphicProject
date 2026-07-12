@@ -24,6 +24,15 @@ public class SoundManager {
         }
     }
 
+
+    public static void playSound(AudioType audioType) {
+        if (!sfxEnabled || audioType.isMusic()) return;
+        Sound sound = sfxMap.get(audioType);
+        if (sound != null) {
+            sound.play();
+        }
+    }
+
     public static void playBackGroundMusic(AudioType audioType) {
         if (!audioType.isMusic()) return;
 
@@ -76,7 +85,15 @@ public class SoundManager {
         updateBackGroundMusicState();
     }
 
-    public static float getMusicVolume() { return musicVolume; }
-    public static boolean isMusicEnabled() { return musicEnabled; }
-    public static boolean isSfxEnabled() { return sfxEnabled; }
+    public static float getMusicVolume() {
+        return musicVolume;
+    }
+
+    public static boolean isMusicEnabled() {
+        return musicEnabled;
+    }
+
+    public static boolean isSfxEnabled() {
+        return sfxEnabled;
+    }
 }

@@ -1,7 +1,7 @@
 package com.test.liftoff.Enums;
 
 public enum EntityState {
-     IDLE,
+    IDLE,
     RUNNING,
     JUMPING,
     DOUBLE_JUMPING,

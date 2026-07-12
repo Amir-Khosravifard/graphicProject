@@ -6,16 +6,18 @@ import com.test.liftoff.Enums.EnemyState;
 import com.test.liftoff.Enums.EntityState;
 import com.test.liftoff.Model.Entity.Player;
 
-public class Mosquito extends Enemy{
+public class Mosquito extends Enemy {
     public final Vector2 targetPosition = new Vector2();
 
     public Mosquito(float x, float y) {
-        // 💡 TWEAK HITBOX HERE: (x, y, width, height, hp, speed)
+
         super(x, y, 80f, 20f, 2, 120f);
     }
 
     @Override
-    public boolean isIgnoringGravity() { return true; }
+    public boolean isIgnoringGravity() {
+        return true;
+    }
 
     @Override
     public void updateAI(float delta, Player player, boolean atEdgeOrWall) {
@@ -39,9 +41,10 @@ public class Mosquito extends Enemy{
             setEnemyState(EnemyState.PATROL);
         }
     }
+
     @Override
     public AnimationType getAnimationType() {
-        // 💡 ADDED: Route directly to death states when processing damage death
+
         if (isDying()) {
             return this.isOnGround() ? AnimationType.Mosquito_death_land : AnimationType.Mosquito_death_air;
         }

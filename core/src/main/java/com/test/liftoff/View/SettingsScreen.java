@@ -10,7 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.test.liftoff.Audio.SoundManager;
 import com.test.liftoff.Enums.AudioType;
 
-public class SettingsScreen extends AbstractScreen{
+public class SettingsScreen extends AbstractScreen {
     @Override
     public void show() {
         super.show();

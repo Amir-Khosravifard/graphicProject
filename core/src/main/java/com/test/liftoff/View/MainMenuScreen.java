@@ -24,7 +24,6 @@ public class MainMenuScreen extends AbstractScreen {
 
         stack.add(backGroundImage);
 
-//        stack.add(logoImage);
 
         Table uiTable = new Table();
 
@@ -33,7 +32,7 @@ public class MainMenuScreen extends AbstractScreen {
         uiTable.add(logoImage).size(logoTexture.getWidth(), logoTexture.getHeight()).center().padBottom(-60).row();
 
         TextButton startGameButton = new TextButton("Start Game", skin);
-        startGameButton.addListener(new ClickListener(){
+        startGameButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 UIManager.changeScreen(new StartGameScreen());
@@ -42,7 +41,7 @@ public class MainMenuScreen extends AbstractScreen {
         uiTable.add(startGameButton).center().pad(10).row();
 
         TextButton settingButton = new TextButton("Settings", skin);
-        settingButton.addListener(new ClickListener(){
+        settingButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 UIManager.changeScreen(new SettingsScreen());
@@ -51,7 +50,7 @@ public class MainMenuScreen extends AbstractScreen {
         uiTable.add(settingButton).center().pad(10).row();
 
         TextButton guideButton = new TextButton("Guide", skin);
-        guideButton.addListener(new ClickListener(){
+        guideButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 UIManager.changeScreen(new GuideScreen());
@@ -60,7 +59,7 @@ public class MainMenuScreen extends AbstractScreen {
         uiTable.add(guideButton).center().pad(10).row();
 
         TextButton achievementsButton = new TextButton("Achievements", skin);
-        achievementsButton.addListener(new ClickListener(){
+        achievementsButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 UIManager.changeScreen(new AchievementsScreen());
@@ -69,22 +68,20 @@ public class MainMenuScreen extends AbstractScreen {
         uiTable.add(achievementsButton).center().pad(10).row();
 
         TextButton exitButton = new TextButton("Exit", skin);
-        exitButton.addListener(new ClickListener(){
+        exitButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.exit();
             }
         });
         uiTable.add(exitButton).center().pad(10).padBottom(25).row();
-//        uiTable.setDebug(true);
+
 
         stack.add(uiTable);
 
         rootTable.add(stack).grow().minSize(0);
 
         Gdx.input.setInputProcessor(stage);
-
-
 
 
     }

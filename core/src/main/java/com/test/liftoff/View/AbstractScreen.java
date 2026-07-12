@@ -94,14 +94,15 @@ public class AbstractScreen implements Screen {
     public void dispose() {
         if (stage != null) stage.dispose();
     }
-    public void addToModalStack(Table table){
+
+    public void addToModalStack(Table table) {
         modalStack.add(table);
     }
 
 
     public TextButton createBackButton(Screen backScreen) {
         TextButton backButton = new TextButton("Back", skin);
-        backButton.addListener(new ClickListener(){
+        backButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 UIManager.changeScreen(backScreen);

@@ -8,20 +8,15 @@ import com.test.liftoff.Model.Entity.Player;
 
 public class Hornhead extends Enemy {
     public Hornhead(float x, float y) {
-        // Base setup: (x, y, width, height, hp, speed)
         super(x, y, 75f, 110f, 4, 80f);
     }
 
-    // =========================================================================
-    // 💡 Dynamic State-Based Hitbox
-    // =========================================================================
     @Override
     public float getWidth() {
-        // When actively lunging, extend the physical reach to match his horns
         if (getEnemyState() == EnemyState.CHARGE) {
             return 110f;
         }
-        return 60f; // Fallback to normal patrol width
+        return 60f;
     }
 
     @Override
@@ -29,49 +24,40 @@ public class Hornhead extends Enemy {
         float dir = isLookingRight() ? 1f : -1f;
         Rectangle playerBox = new Rectangle(player.getPosition().x, player.getPosition().y, player.getWidth(), player.getHeight());
 
-        // 1. Patrol Phase
         if (getEnemyState() == EnemyState.PATROL) {
             getVelocity().x = speed * dir;
             setCurrentState(EntityState.RUNNING);
-
             if (aiTimer >= 2.0f) {
                 setEnemyState(EnemyState.PAUSE);
                 aiTimer = 0f;
             }
-
             float sightX = isLookingRight() ? getPosition().x : getPosition().x - 200f;
             Rectangle sightBox = new Rectangle(sightX, getPosition().y, 200f, getHeight());
-
             if (sightBox.overlaps(playerBox)) {
-                setEnemyState(EnemyState.ATTACK); // Enter wind-up anticipation
+                setEnemyState(EnemyState.ATTACK);
                 aiTimer = 0f;
             }
-            if (atEdgeOrWall) setLookingRight(!isLookingRight());
-        }
 
-        // 2. Attack Anticipation Phase (Freeze and scream)
-        else if (getEnemyState() == EnemyState.ATTACK) {
+
+            if (atEdgeOrWall && flipCooldownTimer <= 0f) {
+                setLookingRight(!isLookingRight());
+                flipCooldownTimer = 0.40f;
+            }
+        } else if (getEnemyState() == EnemyState.ATTACK) {
             getVelocity().x = 0;
             setCurrentState(EntityState.ATTACKING);
-
             if (aiTimer >= 0.4f) {
-                setEnemyState(EnemyState.CHARGE); // Hitbox expands the exact frame this triggers!
+                setEnemyState(EnemyState.CHARGE);
                 aiTimer = 0f;
             }
-        }
-
-        // 3. Post-Action Breather
-        else if (getEnemyState() == EnemyState.PAUSE) {
+        } else if (getEnemyState() == EnemyState.PAUSE) {
             getVelocity().x = 0;
             setCurrentState(EntityState.IDLE);
             if (aiTimer >= 1.0f) {
                 setEnemyState(EnemyState.PATROL);
                 aiTimer = 0f;
             }
-        }
-
-        // 4. Heavy Lunge Charge Phase
-        else if (getEnemyState() == EnemyState.CHARGE) {
+        } else if (getEnemyState() == EnemyState.CHARGE) {
             getVelocity().x = speed * 2.5f * dir;
             if (atEdgeOrWall || aiTimer >= 2.5f) {
                 setEnemyState(EnemyState.PAUSE);
@@ -91,9 +77,6 @@ public class Hornhead extends Enemy {
         return AnimationType.Hornhead_walk;
     }
 
-    // =========================================================================
-    // 🛠️ DYNAMIC SPRITE HOOK ALIGNMENTS
-    // =========================================================================
     @Override
     public float getSpriteOffsetX(float frameWidth) {
         if (getEnemyState() == EnemyState.CHARGE)

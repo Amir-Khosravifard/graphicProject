@@ -12,8 +12,8 @@ import com.badlogic.gdx.utils.Align;
 
 import java.awt.*;
 
-public class EnterGameButtonGenerator  {
-    public static Button generateButton(Skin skin, String iconImagePath, String buttonText){
+public class EnterGameButtonGenerator {
+    public static Button generateButton(Skin skin, String iconImagePath, String buttonText) {
         Texture iconTexture = new Texture(Gdx.files.internal(iconImagePath));
         com.badlogic.gdx.scenes.scene2d.ui.Image iconImage = new com.badlogic.gdx.scenes.scene2d.ui.Image(iconTexture);
 
@@ -22,7 +22,7 @@ public class EnterGameButtonGenerator  {
 
 
         com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle customLabelStyle = new com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle();
-        customLabelStyle.font = skin.getFont("font"); // Gets your font asset
+        customLabelStyle.font = skin.getFont("font");
         customLabelStyle.fontColor = skin.getColor("white");
 
         com.badlogic.gdx.scenes.scene2d.ui.Label slotText = new com.badlogic.gdx.scenes.scene2d.ui.Label(buttonText, customLabelStyle);
@@ -39,18 +39,18 @@ public class EnterGameButtonGenerator  {
         saveSlotButton.add(iconImage).padRight(12);
         saveSlotButton.add(textOverPlateStack).size(350, 75);
 
-        saveSlotButton.addListener(new ClickListener(){
+        saveSlotButton.addListener(new ClickListener() {
             @Override
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
                 super.enter(event, x, y, pointer, fromActor);
                 saveSlotButton.getColor().a = 0.5f;
             }
         });
-        saveSlotButton.addListener(new ClickListener(){
+        saveSlotButton.addListener(new ClickListener() {
             @Override
             public void exit(InputEvent event, float x, float y, int pointer, com.badlogic.gdx.scenes.scene2d.Actor toActor) {
                 super.exit(event, x, y, pointer, toActor);
-                // 🔄 Untouched state: Return back to translucent when mouse leaves
+
                 saveSlotButton.getColor().a = 1.0f;
             }
         });

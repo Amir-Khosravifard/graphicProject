@@ -6,7 +6,7 @@ import com.test.liftoff.Enums.EnemyState;
 import com.test.liftoff.Enums.EntityState;
 import com.test.liftoff.Model.Entity.Player;
 
-public class CrystalGuardian extends Enemy{
+public class CrystalGuardian extends Enemy {
     public boolean isEnraged = false;
 
     public CrystalGuardian(float x, float y) {
@@ -16,19 +16,18 @@ public class CrystalGuardian extends Enemy{
 
     @Override
     public void updateAI(float delta, Player player, boolean atEdgeOrWall) {
-        // Calculate true center-points rather than comparing bottom-left layout boundaries
+
         float playerCenter = player.getPosition().x + player.getWidth() / 2f;
         float bossCenter = getPosition().x + getWidth() / 2f;
         float horizontalDifference = playerCenter - bossCenter;
 
-        getVelocity().x = 0; // Default to zero horizontal movement
+        getVelocity().x = 0;
 
-        // 1. Patrol/Idle State
+
         if (getEnemyState() == EnemyState.PATROL) {
             setCurrentState(EntityState.IDLE);
 
-            // 💡 THE JITTER FIX: Only update looking direction outside a 40-pixel deadzone buffer.
-            // If you are jumping directly on his head, he will maintain his current stance calmly.
+
             if (Math.abs(horizontalDifference) > 40f) {
                 setLookingRight(horizontalDifference > 0);
             }
@@ -37,13 +36,10 @@ public class CrystalGuardian extends Enemy{
                 setEnemyState(EnemyState.ATTACK);
                 aiTimer = 0f;
             }
-        }
-
-        // 2. Laser Charging State
-        else if (getEnemyState() == EnemyState.ATTACK) {
+        } else if (getEnemyState() == EnemyState.ATTACK) {
             setCurrentState(EntityState.ATTACKING);
 
-            // Lock onto player direction right before the laser burst fires
+
             if (Math.abs(horizontalDifference) > 40f) {
                 setLookingRight(horizontalDifference > 0);
             }
@@ -53,19 +49,16 @@ public class CrystalGuardian extends Enemy{
                 setEnemyState(EnemyState.CHARGE);
                 aiTimer = 0f;
             }
-        }
-
-        // 3. Running Chase Charge State
-        else if (getEnemyState() == EnemyState.CHARGE) {
+        } else if (getEnemyState() == EnemyState.CHARGE) {
             setCurrentState(EntityState.RUNNING);
 
-            // 💡 THE CLIFF & WALL FIX: Drop out of charge state instantly if an obstacle or ledge is tripped
+
             if (atEdgeOrWall) {
                 setEnemyState(EnemyState.PATROL);
                 aiTimer = 0f;
             } else {
-                // Lock his running velocity strictly into the direction he established before dashing.
-                // This stops him from spinning around like crazy mid-dash if you hop over him.
+
+
                 float chaseDir = isLookingRight() ? 1f : -1f;
                 getVelocity().x = speed * 2.0f * chaseDir;
             }

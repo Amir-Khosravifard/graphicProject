@@ -10,9 +10,11 @@ public abstract class Enemy extends Entity {
     public final float speed;
     protected int contactDamage = 1;
 
-    // 💡 ADDED: State trackers for corpse handling
     protected boolean isDying = false;
     public float deathTimer = 0f;
+
+
+    public float flipCooldownTimer = 0f;
 
     public Enemy(float x, float y, float width, float height, int maxHealth, float speed) {
         super(width, height, maxHealth);
@@ -21,12 +23,22 @@ public abstract class Enemy extends Entity {
         this.isLookingRight = false;
     }
 
-    public EnemyState getEnemyState() { return enemyState; }
-    public void setEnemyState(EnemyState state) { this.enemyState = state; }
-    public int getContactDamage() { return contactDamage; }
-    public boolean isDying() { return isDying; }
+    public EnemyState getEnemyState() {
+        return enemyState;
+    }
 
-    // 💡 OVERRIDE: intercepts death sequence to loop animations safely
+    public void setEnemyState(EnemyState state) {
+        this.enemyState = state;
+    }
+
+    public int getContactDamage() {
+        return contactDamage;
+    }
+
+    public boolean isDying() {
+        return isDying;
+    }
+
     @Override
     public void takeDamage(int amount) {
         if (isDead || isDying) return;
@@ -34,8 +46,8 @@ public abstract class Enemy extends Entity {
         if (this.health <= 0) {
             this.health = 0;
             this.isDying = true;
-            this.deathTimer = 0.5f;        // 0.5 second death window
-            this.getVelocity().set(0, 0);   // Stop all physics slide momentum instantly
+            this.deathTimer = 0.5f;
+            this.getVelocity().set(0, 0);
         }
     }
 

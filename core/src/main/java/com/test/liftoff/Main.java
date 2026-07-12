@@ -6,7 +6,7 @@ import com.test.liftoff.View.AssetManager;
 import com.test.liftoff.View.MainMenuScreen;
 import com.test.liftoff.View.UIManager;
 
-/** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
+
 public class Main extends Game {
 
 
@@ -14,7 +14,7 @@ public class Main extends Game {
     public void create() {
         UIManager.initMain(this);
         AssetManager.initAsset();
-        SoundManager.initSound(); // 💡 Added: Caches raw sound clips seamlessly at launch
+        SoundManager.initSound();
 
         MainMenuScreen mainMenuScreen = new MainMenuScreen();
         setScreen(mainMenuScreen);

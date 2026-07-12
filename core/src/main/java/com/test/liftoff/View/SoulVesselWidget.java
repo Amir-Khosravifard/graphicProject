@@ -21,13 +21,13 @@ public class SoulVesselWidget extends Widget {
         this.liquidTextures = liquidTextures;
     }
 
-    // 💡 FIXED: Return the scaled width to the Scene2D Table layout engine
+
     @Override
     public float getPrefWidth() {
         return vesselFrame.getWidth() * HUD_SCALE;
     }
 
-    // 💡 FIXED: Return the scaled height to shrink the layout box down completely
+
     @Override
     public float getPrefHeight() {
         return vesselFrame.getHeight() * HUD_SCALE;

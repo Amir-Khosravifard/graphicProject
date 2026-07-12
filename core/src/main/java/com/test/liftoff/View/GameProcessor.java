@@ -2,9 +2,7 @@ package com.test.liftoff.View;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.test.liftoff.Controller.GameController;
-import com.test.liftoff.Enums.AnimationType;
 
 public class GameProcessor implements InputProcessor {
     private GameController gameController;
@@ -15,14 +13,58 @@ public class GameProcessor implements InputProcessor {
 
     @Override
     public boolean keyDown(int keyCode) {
-        if(keyCode == Input.Keys.ESCAPE){
-            if (gameController.isPaused()) return false; // Prevent stacking multiple pause menus
+        boolean ctrlPressed = com.badlogic.gdx.Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) ||
+            com.badlogic.gdx.Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT);
 
-            gameController.setPaused(true); // 💡 Pause the game logic instantly
+        if (ctrlPressed) {
+            if (keyCode == Input.Keys.T) {
+                gameController.cheatTeleportToBoss();
+                return true;
+            }
+            if (keyCode == Input.Keys.N) {
+                gameController.cheatToggleNoclip();
+                return true;
+            }
+            if (keyCode == Input.Keys.H) {
+                gameController.cheatEmergencyHeal();
+                return true;
+            }
+            if (keyCode == Input.Keys.S) {
+                gameController.cheatRefillSoul();
+                return true;
+            }
+            if (keyCode == Input.Keys.G) {
+                gameController.cheatToggleGodMode();
+                return true;
+            }
+            if (keyCode == Input.Keys.K) {
+                gameController.cheatKillAllEnemies();
+                return true;
+            }
+        }
 
+
+        if (gameController.isNearZote()) {
+            if (keyCode == Input.Keys.E && !gameController.isDialogueActive()) {
+                gameController.setDialogueActive(true);
+                GameScreen.resetTypewriterEffect();
+                return true;
+            }
+            if (keyCode == Input.Keys.ENTER && gameController.isDialogueActive()) {
+                GameScreen.advanceOrSkipDialogueLine();
+                return true;
+            }
+        }
+
+        if (gameController.isDialogueActive()) return true;
+
+        if (keyCode == Input.Keys.ESCAPE) {
+            if (gameController.isPaused()) return false;
+            gameController.setPaused(true);
             PauseModal pauseModal = new PauseModal() {
                 @Override
                 public void onExit() {
+                    gameController.saveCurrentGame();
                     UIManager.changeScreen(new StartGameScreen());
                 }
 
@@ -31,38 +73,29 @@ public class GameProcessor implements InputProcessor {
                     hide();
                 }
 
-                // 💡 OVERRIDE: Captures BOTH the resume button click AND clicking outside the window box
                 @Override
                 public void hide() {
                     super.hide();
-                    gameController.setPaused(false); // 💡 Safely unpause the engine
+                    gameController.setPaused(false);
                 }
             };
             pauseModal.show();
-        }
-        else if(keyCode == Input.Keys.RIGHT){
+        } else if (keyCode == Input.Keys.RIGHT) {
             gameController.setMovingRight(true);
-        }
-        else if(keyCode == Input.Keys.LEFT){
+        } else if (keyCode == Input.Keys.LEFT) {
             gameController.setMovingLeft(true);
-        }
-
-        else if (keyCode == Input.Keys.DOWN) {
+        } else if (keyCode == Input.Keys.DOWN) {
             gameController.setLookingDown(true);
-        }
-        else if(keyCode == Input.Keys.UP){
-            gameController.jumpPlayer();
-        }
-        else if(keyCode == Input.Keys.C) {
+        } else if (keyCode == Input.Keys.UP) {
+            if (gameController.getPlayer().isNoclip()) gameController.setMovingUp(true);
+            else gameController.jumpPlayer();
+        } else if (keyCode == Input.Keys.C) {
             gameController.handlePlayerDash();
-        }
-        else if(keyCode == Input.Keys.X){
+        } else if (keyCode == Input.Keys.X) {
             gameController.handlePlayerAttack();
-        }
-        else if(keyCode == Input.Keys.A){
+        } else if (keyCode == Input.Keys.A) {
             gameController.setFocusActive(true);
-        }
-        else if (keyCode == Input.Keys.O) {
+        } else if (keyCode == Input.Keys.O) {
             gameController.damagePlayer(1);
         }
         return false;
@@ -70,17 +103,20 @@ public class GameProcessor implements InputProcessor {
 
     @Override
     public boolean keyUp(int keyCode) {
+        if (gameController.isDialogueActive()) return true;
 
-        if(keyCode == Input.Keys.RIGHT){
+        if (keyCode == Input.Keys.RIGHT) {
             gameController.setMovingRight(false);
-        }
-        else if(keyCode == Input.Keys.LEFT){
+        } else if (keyCode == Input.Keys.LEFT) {
             gameController.setMovingLeft(false);
-        }
-        else if (keyCode == Input.Keys.DOWN) {
+        } else if (keyCode == Input.Keys.DOWN) {
             gameController.setLookingDown(false);
+        } else if (keyCode == Input.Keys.UP) {
+            gameController.setMovingUp(false);
+            gameController.cutPlayerJump();
+        } else if (keyCode == Input.Keys.A) {
+            gameController.setFocusActive(false);
         }
-        else if(keyCode == Input.Keys.A){ gameController.setFocusActive(false); } // Releasing S stops focusing
         return false;
     }
 

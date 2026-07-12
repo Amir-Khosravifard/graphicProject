@@ -30,7 +30,7 @@ public class Modal extends Table {
         });
 
 
-        wrapperTable.addListener(new InputListener(){
+        wrapperTable.addListener(new InputListener() {
             @Override
             public boolean keyUp(InputEvent event, int keycode) {
                 return true;
@@ -42,7 +42,6 @@ public class Modal extends Table {
             }
         });
 
-//        setDebug(true);
 
     }
 
